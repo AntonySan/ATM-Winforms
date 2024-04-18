@@ -9,7 +9,7 @@ namespace ATM_APP
     internal class File_Creator
     {
         string SSD_serialNumber = GetHardDriveSerialNumber();
-        static string GetHardDriveSerialNumber()
+        public static string GetHardDriveSerialNumber()
         {
             // Отримання інформації про жорсткий диск
             ManagementObjectSearcher searcher =
@@ -39,7 +39,7 @@ namespace ATM_APP
         public void DailyReport()
         {
             // Перевірка серійного номера SSD
-            if (IsSSDSerialNumberValid(SSD_serialNumber))
+            if (SSD_serialNumber != null && IsSSDSerialNumberValid(SSD_serialNumber))
             {
                 // Генерація імені файлу з поточною датою
                 string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
@@ -60,7 +60,7 @@ namespace ATM_APP
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("NO");
+                    MessageBox.Show(ex.Message);
                 }
             }
         }

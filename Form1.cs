@@ -104,10 +104,15 @@ namespace ATM_APP
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("Card_number", "1234 5467 4444 1324");
             parameters.Add("PIN", "1111");
-            
 
-            Encryption_Manager encryption_Manager = new Encryption_Manager();
-            encryption_Manager.Example();
+
+            //Encryption_Manager encryption_Manager = new Encryption_Manager();
+            //encryption_Manager.Example();
+            File_Creator ds = new File_Creator();
+           string fff = File_Creator.GetHardDriveSerialNumber();
+           // ds.IsSSDSerialNumberValid(File_Creator.GetHardDriveSerialNumber());
+            ds.DailyReport();
+            MessageBox.Show(fff);
         }
 
         private void AddButtons()
