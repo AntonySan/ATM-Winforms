@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
+using System.Transactions;
 using System.Windows.Forms;
 namespace ATM_APP
 {
@@ -80,8 +81,8 @@ namespace ATM_APP
     {
         DatabaseManager databaseManager = new DatabaseManager();
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
-        const string connString = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
-        SqlConnection sqlConnection = new SqlConnection(connString);
+        //const string connString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\"C:\\Users\\anton\\source\\repos\\ATM Winforms\\Database1.accdb\";Persist Security Info=True";
+        //SqlConnection sqlConnection = new SqlConnection(connString);
         private Button[] buttons;
         private Label[] labels;
         private TextBox[] textBoxes;
@@ -101,18 +102,38 @@ namespace ATM_APP
             StartPosition = FormStartPosition.CenterScreen;
             AddButtons();
             AddLabel();
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("Card_number", "1234 5467 4444 1324");
-            parameters.Add("PIN", "1111");
+
+
+
+            DatabaseManager.ConnectToDatabase(this);
+            //Dictionary<string, object> parameters = new Dictionary<string, object>();
+            //parameters.Add("Transaction_id", "1234 5467 4444 1324");
+            //parameters.Add("PIN", "1111");
+            // SqlConnection sqlConnection = new SqlConnection(connString);
+
+
+            //Dictionary<string, object> parameters11 = new Dictionary<string, object>();
+            //parameters11.Add("Transaction", "11111");
+
+            //DatabaseManager.WriteData(sqlConnection, "Transaction", parameters11);
+
+            //sqlConnection.Close();
+
+
+            //sqlConnection.Open();
+            //    List<string> fields = new List<string>() { "Transaction", "card_id" };
+            //    DatabaseManager.ReadData(sqlConnection, "Transaction", fields);
+            //    sqlConnection.Close(); // Закриваємо перший DataReader
+
 
 
             //Encryption_Manager encryption_Manager = new Encryption_Manager();
             //encryption_Manager.Example();
-            File_Creator ds = new File_Creator();
-           string fff = File_Creator.GetHardDriveSerialNumber();
-           // ds.IsSSDSerialNumberValid(File_Creator.GetHardDriveSerialNumber());
-            ds.DailyReport();
-            MessageBox.Show(fff);
+
+            // ds.IsSSDSerialNumberValid(File_Creator.GetHardDriveSerialNumber());
+
+
+
         }
 
         private void AddButtons()

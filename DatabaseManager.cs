@@ -1,61 +1,68 @@
 ﻿ using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Data.OleDb;
+using Microsoft.Data.SqlClient;
+using System.Data.Odbc;
 namespace ATM_APP
 {
     internal class DatabaseManager
     {
-         void ConnectToDatabase(Form form)
+        public static void ConnectToDatabase(Form form)
         {
-            const string connString = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
-            SqlConnection sqlConnection = new SqlConnection(connString); ;
-            try
-            {
-                 sqlConnection.Open();
+            string connString = @"Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\anton\source\repos\ATM Winforms\Database1.accdb;";
 
-            }
-            catch(Exception ex) 
+            // Creating an OdbcConnection object to connect to the Access database
+            using (OdbcConnection conn = new OdbcConnection(connString))
             {
-                MessageBox.Show("Failed to connect to database","Database Connection Error", MessageBoxButtons.OK);
-            }
-            finally
-            {
-                sqlConnection.Close();
+                try
+                {
+                    conn.Open();
+                    MessageBox.Show("Connected to the database");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to connect to the database: " + ex.Message, "Database Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-        void ReadData(SqlConnection sqlConnection, string tableName, Dictionary<string, object> parameters)
+        public static void ReadData(SqlConnection sqlConnection, string tableName, List<string> fields)
         {
-            // Створюємо SQL-запит з використанням переданої назви таблиці та параметрів
-            string sqlQuery = "SELECT * FROM " + tableName + " WHERE ";
-            foreach (var parameter in parameters)
+            string sqlQuery = "SELECT ";
+
+            // Додаємо поля до SQL-запиту
+            foreach (string field in fields)
             {
-                sqlQuery += parameter.Key + " = @" + parameter.Key + " AND ";
+                sqlQuery += field + ", ";
             }
-            // Видаляємо "AND " в кінці запиту
-            sqlQuery = sqlQuery.Remove(sqlQuery.Length - 5);
+            sqlQuery = sqlQuery.Remove(sqlQuery.Length - 2); // Видаляємо останню кому
+
+            sqlQuery += " FROM " + tableName;
 
             SqlCommand command = new SqlCommand(sqlQuery, sqlConnection);
 
-            // Додаємо параметри до команди SQL
-            foreach (var parameter in parameters)
-            {
-                command.Parameters.AddWithValue("@" + parameter.Key, parameter.Value);
-            }
-
             SqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
+            if (reader.HasRows)
             {
-                // Обробка результату запиту
+                while (reader.Read())
+                {
+                    string message = "";
+                    foreach (string field in fields)
+                    {
+                        message += $"{field}: {reader[field].ToString()}\n";
+                    }
+                    MessageBox.Show(message);
+                }
             }
             else
             {
-                MessageBox.Show("Incorrect data", "Error", MessageBoxButtons.OK);
+                MessageBox.Show("No data found", "Error", MessageBoxButtons.OK);
             }
         }
 
 
-        public void WriteData(SqlConnection sqlConnection, string tableName, Dictionary<string, object> parameters)
+        public static void WriteData(SqlConnection sqlConnection, string tableName, Dictionary<string, object> parameters)
         {
             sqlConnection.Open();
 
