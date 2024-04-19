@@ -103,27 +103,16 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
 
-
+            string connString = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
 
             DatabaseManager.ConnectToDatabase(this);
-            //Dictionary<string, object> parameters = new Dictionary<string, object>();
-            //parameters.Add("Transaction_id", "1234 5467 4444 1324");
-            //parameters.Add("PIN", "1111");
-            // SqlConnection sqlConnection = new SqlConnection(connString);
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("Transaction_id", "1234 5467 4444 1324");
+            parameters.Add("PIN", "1111");
+             SqlConnection sqlConnection = new SqlConnection(connString);
 
+            DatabaseManager.WriteData(sqlConnection, "Transaction1", parameters);
 
-            //Dictionary<string, object> parameters11 = new Dictionary<string, object>();
-            //parameters11.Add("Transaction", "11111");
-
-            //DatabaseManager.WriteData(sqlConnection, "Transaction", parameters11);
-
-            //sqlConnection.Close();
-
-
-            //sqlConnection.Open();
-            //    List<string> fields = new List<string>() { "Transaction", "card_id" };
-            //    DatabaseManager.ReadData(sqlConnection, "Transaction", fields);
-            //    sqlConnection.Close(); // Закриваємо перший DataReader
 
 
 

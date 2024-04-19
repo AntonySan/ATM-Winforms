@@ -1,20 +1,18 @@
 ﻿ using System;
 using System.Collections.Generic;
-//using System.Data.SqlClient;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Data.OleDb;
-using Microsoft.Data.SqlClient;
-using System.Data.Odbc;
 namespace ATM_APP
 {
     internal class DatabaseManager
     {
         public static void ConnectToDatabase(Form form)
         {
-            string connString = @"Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:\Users\anton\source\repos\ATM Winforms\Database1.accdb;";
+            string connString = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
 
             // Creating an OdbcConnection object to connect to the Access database
-            using (OdbcConnection conn = new OdbcConnection(connString))
+            using (SqlConnection conn = new SqlConnection(connString))
             {
                 try
                 {
