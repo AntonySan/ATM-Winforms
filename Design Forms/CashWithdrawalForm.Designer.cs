@@ -1,6 +1,6 @@
 ﻿namespace ATM_Winforms.Design_Forms
 {
-    partial class CashWithdrawalForm
+public  partial class CashWithdrawalForm
     {
         /// <summary>
         /// Required designer variable.

@@ -12,7 +12,7 @@ namespace ATM_Winforms.Design_Forms
 {
     public partial class CashWithdrawalForm : Form
     {
-        public CashWithdrawalForm()
+        private CashWithdrawalForm()
         {
             InitializeComponent();
         }

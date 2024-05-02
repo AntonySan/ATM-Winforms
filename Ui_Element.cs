@@ -13,15 +13,19 @@ namespace ATM_APP
             button.Location = location;
             button.Size = size;
             button.Click += eventHandler;
-           return button;
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0; // Товщина межі кнопки (регулюйте за потребою)
+            return button;
         }
 
-        public Label CreateLabel(string text, Point location, Size size)
+        public Label CreateLabel(string text, Point location)
         {
             Label label = new Label();
             label.Text = text;
             label.Location = location;
-            label.Size = size;
+            label.Font = new Font("Segue UI", 12, FontStyle.Regular);
+            label.BackColor = Color.Transparent;
+            label.AutoSize = true;
             return label;
         }
 
@@ -30,6 +34,8 @@ namespace ATM_APP
             TextBox textBox = new TextBox();
             textBox.Location = location;
             textBox.Size = size;
+            textBox.Multiline = true;
+            textBox.BorderStyle = BorderStyle.None;
             return textBox;
         }
     }

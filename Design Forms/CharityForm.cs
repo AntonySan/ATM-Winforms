@@ -12,7 +12,7 @@ namespace ATM_Winforms.Design_Forms
 {
     public partial class CharityForm : Form
     {
-        public CharityForm()
+        private CharityForm()
         {
             InitializeComponent();
         }

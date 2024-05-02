@@ -28,7 +28,7 @@ namespace ATM_APP
             return buttons;
         }
 
-         public Label[] CreateLabel(short arraySize, Form form, string[] LabelText, Point[] LabelLocation, Size[] LabelSize)
+         public Label[] CreateLabel(short arraySize, Form form, string[] LabelText, Point[] LabelLocation)
         {
             Label[] labels = new Label[arraySize];
 
@@ -36,11 +36,11 @@ namespace ATM_APP
 
             Point[] Label_location = LabelLocation;
 
-            Size[] Label_size = LabelSize;
+            
 
             for (short i = 0; i< LabelText.Length; i++)
             {
-                labels[i] = ui_Element.CreateLabel(Label_text[i], Label_location[i], Label_size[i]);
+                labels[i] = ui_Element.CreateLabel(Label_text[i], Label_location[i]);
                 
             }
             form.Controls.AddRange(labels);

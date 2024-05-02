@@ -1,6 +1,6 @@
 ﻿namespace ATM_APP
 {
-    partial class Intro
+    partial class InsertCardForm
     {
         /// <summary>
         /// Required designer variable.
