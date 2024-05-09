@@ -6,14 +6,40 @@ using System.Net.Http;
 using System.Windows.Forms;
 namespace ATM_APP
 {
-    internal class Exchange_Rates
+    public class CurrencyExchangeRate
     {
-     
-      
-        public async Task<Dictionary<string, Tuple<string, string, string, double, double, double, double>>>  GettingExchangeRate()
+        public string Currency { get; set; }
+        public string SaleRate { get; set; }
+        public string PurchaseRate { get; set; }
+
+        public CurrencyExchangeRate(string currency, string saleRate, string purchaseRate)
+        {
+            Currency = currency;
+            SaleRate = saleRate;
+            PurchaseRate = purchaseRate;
+        }
+    }
+
+
+    public class ExchangeRateData
+    {
+        public string Date { get; set; }
+        public string Bank { get; set; }
+        public string BaseCurrency { get; set; }
+        public string BaseCurrencyLit { get; set; }
+        public double ExchangeRate { get; set; }
+        public string Currency {  get; set; } 
+        public double SaleRateNB { get; set; }
+        public double PurchaseRateNB { get; set; }
+        public double SaleRate { get; set; }
+        public double PurchaseRate { get; set; }
+    }
+    public class ExchangeRates
+    {
+        public async Task<Dictionary<string, ExchangeRateData>> GettingExchangeRate()
         {
             string apiUrl = $"https://api.privatbank.ua/p24api/exchange_rates?json&date={DateTime.Now.ToShortDateString()}";
-            Dictionary<string, Tuple<string, string, string, double, double, double, double>> rates = new Dictionary<string, Tuple<string, string, string, double, double, double, double>>();
+            Dictionary<string, ExchangeRateData> rates = new Dictionary<string, ExchangeRateData>();
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.GetAsync(apiUrl);
@@ -22,39 +48,61 @@ namespace ATM_APP
                     string json = await response.Content.ReadAsStringAsync();
 
                     // Десеріалізуємо отриманий JSON в об'єкт
-                    ExchangeRates exchangeRates = JsonConvert.DeserializeObject<ExchangeRates>(json);
+                    ExchangeRateResponse exchangeRatesResponse = JsonConvert.DeserializeObject<ExchangeRateResponse>(json);
 
-                    foreach (var rate in exchangeRates.ExchangeRate)
+                    foreach (var rate in exchangeRatesResponse.ExchangeRate)
                     {
-                        rates[rate.Currency] = new Tuple<string,string, string, double, double, double, double>(exchangeRates.Date, exchangeRates.Bank, exchangeRates.BaseCurrencyLit, rate.SaleRateNB, rate.PurchaseRateNB, rate.salerate, rate.purchaserate);
+                        var rateData = new ExchangeRateData
+                        {
+                            Date = exchangeRatesResponse.Date,
+                            Bank = exchangeRatesResponse.Bank,
+                            BaseCurrency = exchangeRatesResponse.BaseCurrency,
+                            BaseCurrencyLit = exchangeRatesResponse.BaseCurrencyLit,
+                            ExchangeRate = rate.ExchangeRate,
+                            Currency = rate.Currency,
+                            SaleRateNB = rate.SaleRateNB,
+                            PurchaseRateNB = rate.PurchaseRateNB,
+                            SaleRate = rate.salerate,
+                            PurchaseRate = rate.purchaserate
+                        };
+                        rates[rate.Currency] = rateData;
                     }
                 }
                 else
                 {
-                    MessageBox.Show($"Помилка: {response.StatusCode}");
+                    // Обробка помилки
                 }
             }
-             return rates;
+            return rates;
         }
 
     }
 
-    public class ExchangeRates
+    public class ExchangeRateResponse
     {
-        public string Date { get; set; }
-        public string Bank { get; set; }
-        public int BaseCurrency { get; set; }
-        public string BaseCurrencyLit { get; set; }
-        public ExchangeRate[] ExchangeRate { get; set; }
+            public string Date { get; set; }
+            public string Bank { get; set; }
+            public string BaseCurrency { get; set; }
+            public string BaseCurrencyLit { get; set; }
+            public List<CurrencyRate> ExchangeRate { get; set; }
+        }
+
+     public class CurrencyRate
+        {
+            public string Currency { get; set; }
+            public double SaleRateNB { get; set; }
+            public double PurchaseRateNB { get; set; }
+            public double salerate { get; set; }
+            public double purchaserate { get; set; }
+
+        public double ExchangeRate { get; set; }
     }
 
-    public class ExchangeRate
+    public static class ExchangeRateGlobal
     {
-        public string BaseCurrency { get; set; }
-        public string Currency { get; set; }
-        public double SaleRateNB { get; set; }
-        public double PurchaseRateNB { get; set; }
-        public double salerate { get; set; }
-        public double purchaserate { get; set; }
+       public static List<CurrencyExchangeRate> ExchangeRate { get; } = new List<CurrencyExchangeRate>();
     }
+
+
+
 }

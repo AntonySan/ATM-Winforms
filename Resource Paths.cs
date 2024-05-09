@@ -34,5 +34,6 @@ namespace ATM_Winforms
         public static string TransferToTheCardForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "TransferToTheCardForm.png");
         public static string UtilityBillsForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "UtilityBillsForm.png");
 
+        public static string DB_connectionString { get; } = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
     }
 }

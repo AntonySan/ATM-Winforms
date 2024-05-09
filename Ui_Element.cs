@@ -36,6 +36,7 @@ namespace ATM_APP
             textBox.Size = size;
             textBox.Multiline = true;
             textBox.BorderStyle = BorderStyle.None;
+            textBox.Font = new Font("Segue UI",20);
             return textBox;
         }
     }
