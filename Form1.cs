@@ -99,7 +99,7 @@ namespace ATM_APP
          this.ClientSize = new Size(828, 599);
          Name = "InsertCardForm";
          StartPosition = FormStartPosition.CenterScreen;
-         this.BackgroundImage = new System.Drawing.Bitmap(@"C:\Users\anton\source\repos\ATM Winforms\Form imagines\InsertCardForm.png");
+         this.BackgroundImage = new System.Drawing.Bitmap(Resource_Paths.InsertCardForm);
          this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
        
          AddButtons();
