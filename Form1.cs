@@ -15,6 +15,7 @@ using System.Security.AccessControl;
 using System.Runtime.CompilerServices;
 using static ATM_Winforms.CompanyDetails;
 using ATM_Winforms.Design_Forms;
+using System.Security.Cryptography.Xml;
 
 namespace ATM_APP
 {
@@ -88,7 +89,7 @@ namespace ATM_APP
 
         File_Creator fileCreator = new File_Creator();
 
-     public InsertCardForm() : base("InsertCard", Resource_Paths.LoginForm)
+     public InsertCardForm() : base("InsertCard", Resource_Paths.InsertCardForm)
      {
          InitializeComponent();
      }
@@ -353,13 +354,13 @@ namespace ATM_APP
         private Button[] buttons;
         private Label[] labels;
         private TextBox[] textBoxes;
-        private Label FullNameLabel, CardNumberLabel,PaymentSystemLabel,ExpirationDateLabel;
+        private Label FullNameLabel, CardNumberLabel, PaymentSystemLabel, ExpirationDateLabel;
         static Update_DB update_DB = new Update_DB();
         ExchangeRates exchangeRate = new ExchangeRates();
 
-        public Main_Menu() : base( "Main Menu", Resource_Paths.MainForm)
+        public Main_Menu() : base("Main Menu", Resource_Paths.MainForm)
         {
-            GetExchangeRates(Resource_Paths.DB_connectionString,"EUR", "USD");
+            GetExchangeRates(Resource_Paths.DB_connectionString, "EUR", "USD");
             AddButtons();
             AddUserLabel();
             AddExchangeRateLabels();
@@ -367,30 +368,30 @@ namespace ATM_APP
 
         private void AddButtons()
         {
-            string[] ButtonText = 
-            { 
-                "ЗНЯТТЯ ГОТІВКИ", "ІСТОРІЯ ПЛАТЕЖІВ", "ПОПОВНИТИ КАРТКУ", 
-                "ШТРАФИ", "КОМУНАЛЬНІ ПЛАТЕЖІ", "ІНТЕРНЕТ", 
-                "ПЕРЕКАЗ НА КАРТКУ", "ПЕРЕКАЗ ЗА РЕКВІЗИТАМИ", "БЛАГОДІЙНІСТЬ" 
+            string[] ButtonText =
+            {
+                "ЗНЯТТЯ ГОТІВКИ", "ІСТОРІЯ ПЛАТЕЖІВ", "ПОПОВНИТИ КАРТКУ",
+                "ШТРАФИ", "КОМУНАЛЬНІ ПЛАТЕЖІ", "ІНТЕРНЕТ",
+                "ПЕРЕКАЗ НА КАРТКУ", "ПЕРЕКАЗ ЗА РЕКВІЗИТАМИ", "БЛАГОДІЙНІСТЬ"
             };
 
-            Point[] ButtonLocation = 
+            Point[] ButtonLocation =
             {
                 new Point(43, 325), new Point(312, 325), new Point(581, 325),
-                new Point(43, 400), new Point(312, 400), new Point(581, 400), 
+                new Point(43, 400), new Point(312, 400), new Point(581, 400),
                 new Point(43, 475), new Point(312, 475) , new Point(581, 475)
             };
 
-            Size[] ButtonSize = 
-            { 
+            Size[] ButtonSize =
+            {
                 new Size(220, 53), new Size(220, 53), new Size(220, 53),
-                new Size(220, 53), new Size(220, 53), new Size(220, 53), 
+                new Size(220, 53), new Size(220, 53), new Size(220, 53),
                 new Size(220, 53), new Size(220, 53), new Size(220, 53)
             };
 
-            EventHandler[] ButtonEvent = 
+            EventHandler[] ButtonEvent =
             {
-               Cash_withdrawls_Click, ExitButton_Click, ReplenishTheCard_Click,
+               Cash_withdrawls_Click, PaymentHistory_Click, ReplenishTheCard_Click,
                Fines_Click, UtilityBills_Click, Internet_Click,
                 TransferToTheCard_Click, TransferByRequisites_Click, Charity_Click
             };
@@ -402,7 +403,7 @@ namespace ATM_APP
 
         private void AddUserLabel()
         {
-            
+
             if (GlobalData.Users.Count >= 1)
             {
                 User user = GlobalData.Users[0];
@@ -416,9 +417,9 @@ namespace ATM_APP
                 PaymentSystemLabel = labels[2];
                 ExpirationDateLabel = labels[3];
 
-                FullNameLabel.Font = ExpirationDateLabel.Font = new Font("SEGUE UI",12);
-                CardNumberLabel.Font = new Font("SEGUE UI",18,FontStyle.Regular);
-                PaymentSystemLabel.Font = new Font("SEGUE UI", 12,FontStyle.Italic);
+                FullNameLabel.Font = ExpirationDateLabel.Font = new Font("SEGUE UI", 12);
+                CardNumberLabel.Font = new Font("SEGUE UI", 18, FontStyle.Regular);
+                PaymentSystemLabel.Font = new Font("SEGUE UI", 12, FontStyle.Italic);
                 MessageBox.Show(user.FullName);
             }
         }
@@ -447,11 +448,10 @@ namespace ATM_APP
         }
 
 
-        private void ExitButton_Click(object sender, EventArgs e)
+        private void PaymentHistory_Click(object sender, EventArgs e)
         {
-            //Log_In log_In_Form = new Log_In();
-            //log_In_Form.ShowDialog();
-            //this.Close();
+           
+          CloseForms(new PaymentHistoryForm());
         }
         private void Cash_withdrawls_Click(object sendar, EventArgs e)
         {
@@ -463,7 +463,7 @@ namespace ATM_APP
         }
         private void ReplenishTheCard_Click(object sender, EventArgs e)
         {
-            ReplenishTheCardForm replenishTheCardForm= new ReplenishTheCardForm();
+            ReplenishTheCardForm replenishTheCardForm = new ReplenishTheCardForm();
             replenishTheCardForm.FormClosed += (s, args) => this.Close(); // Додати обробник події FormClosed
 
             replenishTheCardForm.Show();
@@ -477,7 +477,7 @@ namespace ATM_APP
 
             FinesForm.Show();
             this.Hide();
-        }     
+        }
         private void UtilityBills_Click(object sender, EventArgs e)
         {
             UtilityBillsForm utilityBillsForm = new UtilityBillsForm();
@@ -558,13 +558,22 @@ namespace ATM_APP
             }
         }
 
+        private void CloseForms(Form form)
+        {
+            
+            form.FormClosed += (s, args) => this.Close(); // Додати обробник події FormClosed
 
-    }
+            form.Show();
+            this.Hide();
+        }
+
+    }   
     //Ready
     public partial class CashWithdrawalForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button WithdrawMoney_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
         private Label CardBalance;
@@ -576,6 +585,9 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
             AddTextBox();
+
+            this.FormClosed += Close_Form;
+
         }
         private void AddButtons()
         {
@@ -600,7 +612,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            WithdrawMoney_Btn = buttons[0];
 
         }
 
@@ -635,7 +647,7 @@ namespace ATM_APP
             WithdrawAmount_Tbx.Font = Pin_Tbx.Font = new Font("Segue UI", 16);
 
         }
-        private void ExitButton_Click(object sender, EventArgs e)
+        private async void ExitButton_Click(object sender, EventArgs e)
         {
             int user_Balance = int.Parse(user.Balance);
             int user_WithdrawAmount = int.Parse(WithdrawAmount_Tbx.Text);
@@ -648,14 +660,19 @@ namespace ATM_APP
                
                 databaseManager.UpdateCardData(user.CardNumber, user.CardType,user.IssueDate,user.ExpirationDate,
                     user.FullName,user.Address,user.CVV_CVC,user.Password,int.Parse(user.Balance),user.CardStatus,
-                    user.PaymentSystem,user.SpendingLimit,user.IssuingBank);
+                    user.PaymentSystem,user.SpendingLimit,user.IssuingBank);        
+
+               await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, "Зняття готівки",
+                    user_WithdrawAmount, "UAH", DateTime.Now, "Успішно",user.CardNumber, null, "");
                 //тут треба анімація видання коштів 
                 MessageBox.Show("Ви успішно зняли готівку");
-               
 
+                WithdrawMoney_Btn.Enabled = false; 
             }
             else
             {
+                await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, "Зняття готівки",
+                    user_WithdrawAmount, "UAH", DateTime.Now, "Помилка", user.CardNumber, null, "");
                 MessageBox.Show("неправильний пін або недостаньо коштів");
             }
         }
@@ -681,12 +698,26 @@ namespace ATM_APP
                 if (rowsAffected > 0)
                 {
                     MessageBox.Show("Баланс користувача успішно оновлено.");
+                    conn.Close();
                 }
                 else
                 {
                     MessageBox.Show("Не вдалося оновити баланс користувача.");
+                    conn.Close();
                 }
             }
+        }
+
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
+
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
         }
     }
     //Ready
@@ -706,6 +737,7 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
             AddTextBox();
+            this.FormClosed += Close_Form;
         }
         private void AddButtons()
         {
@@ -790,6 +822,7 @@ namespace ATM_APP
         {
             AmountToPay_Tbx.Enabled = false;
             await DepositMoneyAnimationAsync();
+            Replenish_Btn.Enabled = false;
         }
 
         private async Task DepositMoneyAnimationAsync()
@@ -798,8 +831,9 @@ namespace ATM_APP
             int targetAmount = int.Parse(AmountToPay_Tbx.Text);
             int currentAmount = 0;
             Random rnd = new Random();
-
-            while (currentAmount < targetAmount)
+            try
+            {
+                while (currentAmount < targetAmount)
             {
                 bool found = false;
                 foreach (int amount in amounts)
@@ -820,16 +854,16 @@ namespace ATM_APP
                 }
             }
 
-            GlobalData.ClearUsers();
+           
             UpdateUserBalance(user.CardNumber, currentAmount);
+                ReloadUserInfo();
             databaseManager.UpdateCardData(user.CardNumber, user.CardType, user.IssueDate, user.ExpirationDate,
                     user.FullName, user.Address, user.CVV_CVC, user.Password, int.Parse(user.Balance), user.CardStatus,
                     user.PaymentSystem, user.SpendingLimit, user.IssuingBank);
-            try
-            {
-                Log_In.GetUserByCardNumberAndPassword();
-
-                User user = GlobalData.Users[0];
+            await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, "Внесення готівки",
+                    currentAmount, "UAH", DateTime.Now, "Успішно","готівка" , user.CardNumber, "");
+           
+              
                 Balance_Label.Text = user.Balance + "₴";
             }
             catch (Exception ex)
@@ -883,9 +917,18 @@ namespace ATM_APP
                 AmountToPay_Tbx.Focus(); // Повертаємо фокус на текстове поле
             }
         }
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
 
-
-
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+        }
+        
     }
     //Ready
     public partial class FinesForm1 : Base_Form
@@ -1041,6 +1084,7 @@ namespace ATM_APP
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button payFine_Btn;
         private Label[] labels;
         private Label AmountDue_Lab;
         User user = GlobalData.Users[0];
@@ -1052,6 +1096,7 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
             AddFlowLayoutPanel();
+            this.FormClosed += Close_Form;
         }
         private void AddButtons()
         {
@@ -1076,7 +1121,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            payFine_Btn = buttons[0]; 
 
         }
 
@@ -1113,6 +1158,7 @@ namespace ATM_APP
             int checkBoxWidth = 300; // Задайте бажану фіксовану ширину чекбоксу
             int verticalSpacing = 10; // Задайте бажаний вертикальний інтервал між чекбоксами
                                       // Очистити панель від усіх елементів
+            ReloadFineInfo();
             panel.Controls.Clear();
             if (GlobalFines.Fines.Count > 0)
             {
@@ -1174,13 +1220,13 @@ namespace ATM_APP
             {
                 
                 await DepositMoneyAnimationAsync();
-
+               
                 MessageBox.Show("Ви успішно оплатили штрафи");
-                
-                
-                GlobalFines.ClearFines();
-                
-                    // Оновлення бази даних лише після натискання кнопки
+
+
+               
+
+                // Оновлення бази даних лише після натискання кнопки
                 foreach (var kvp in finePaymentStatus)
                 {
                     int fineID = kvp.Key;
@@ -1190,6 +1236,7 @@ namespace ATM_APP
                     {
                         // Оновлення бази даних про статус штрафу на "сплачено"
                         UpdateFinePaymentStatus(fineID, "1");
+
                     }
                     else
                     {
@@ -1198,25 +1245,25 @@ namespace ATM_APP
                     }
                 }
 
-                FinesForm1.ReadFinesData();
-                if (GlobalFines.Fines.Count > 0)
-                {
-                    Fine fine = GlobalFines.Fines[0];
-                }
-
-                panel.Controls.Clear();
-                AddFlowLayoutPanel();
-                panel.Refresh();
-       
-
                 // Позначимо всі оплачені чекбокси як неактивні
                 foreach (Control control in panel.Controls)
                 {
                     if (control is CheckBox checkBox && checkBox.Checked)
                     {
                         checkBox.Checked = false;
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Оплата штрафу: {checkBox.Text}",
+    totalAmount, "UAH", DateTime.Now, "Успішно", user.CardNumber, null, "");
                     }
                 }
+                ReloadFineInfo();
+                panel.Controls.Clear();
+                AddFlowLayoutPanel();
+                panel.Refresh();
+       
+
+               
+
+                payFine_Btn.Enabled = false;
             }
         }
 
@@ -1269,7 +1316,28 @@ namespace ATM_APP
 
 
         }
+        private void ReloadFineInfo()
+        {
+            GlobalFines.ClearFines();
+            FinesForm1.ReadFinesData();
+            if (GlobalFines.Fines.Count > 0)
+            {
+                Fine fine = GlobalFines.Fines[0];
+            }
 
+        }
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
+
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+            ReloadFineInfo();
+        }
 
     }
     //Ready
@@ -1277,6 +1345,7 @@ namespace ATM_APP
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button payUtilityBills_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
         int totalAmount = 0; // Змінна для збереження суми до сплати   
@@ -1284,12 +1353,14 @@ namespace ATM_APP
         private Label AmountDue_Lab;
         private Panel panel = new Panel();
        private static User user = GlobalData.Users[0];
+        private Utility_Bills utility_Bills;
         public UtilityBillsForm() : base("Комунальні платежі", Resource_Paths.UtilityBillsForm)
         {
             ReadUserBills();
             AddButtons();
             AddLabel();
             AddFlowLayoutPanel();
+            this.FormClosing += Close_Form;
         }
         private void AddButtons()
         {
@@ -1314,7 +1385,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            payUtilityBills_Btn = buttons[0];
 
         }
 
@@ -1351,6 +1422,7 @@ namespace ATM_APP
             int checkBoxWidth = 300; // Задайте бажану фіксовану ширину чекбоксу
             int verticalSpacing = 10; // Задайте бажаний вертикальний інтервал між чекбоксами
                                       // Очистити панель від усіх елементів
+            ReloadUtilityBillsInfo();
             panel.Controls.Clear();
             MessageBox.Show(GlobalUtility_Bills.utility_Bills.Count.ToString());
             if (GlobalUtility_Bills.utility_Bills.Count > 0)
@@ -1414,35 +1486,28 @@ namespace ATM_APP
                 await DepositMoneyAnimationAsync();
 
                 MessageBox.Show("Ви успішно оплатили Комуналку");
+            GlobalUtility_Bills.ClearUtility_Bills();
 
-
-               
-                GlobalUtility_Bills.ClearUtility_Bills();
-
-                // Оновлення бази даних лише після натискання кнопки
-                foreach (var kvp in BillsPaymentStatus)
+            // Оновлення бази даних лише після натискання кнопки
+            foreach (var kvp in BillsPaymentStatus)
                 {
                     int billID = kvp.Key;
                     string isPaid = kvp.Value;
 
                     if (isPaid == "1")
                     {
-                        // Оновлення бази даних про статус штрафу на "сплачено"
+                        
                         UpdateUserBillStatus(billID, "1");
                     }
                     else
                     {
-                        // Оновлення бази даних про статус штрафу на "не сплачено"
+                       
                         UpdateUserBillStatus(billID, "0");
                     }
                 }
 
-                
-                ReadUserBills();
-                if(GlobalUtility_Bills.utility_Bills.Count > 0)
-                {
-                    Utility_Bills utility_Bills = GlobalUtility_Bills.utility_Bills[0];
-                }
+
+            ReloadUtilityBillsInfo();
 
                 panel.Controls.Clear();
                 AddFlowLayoutPanel();
@@ -1454,10 +1519,15 @@ namespace ATM_APP
                 {
                     if (control is CheckBox checkBox && checkBox.Checked)
                     {
-                        checkBox.Checked = false;
+                    await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Оплата за послугу {checkBox.Text}",
+  totalAmount, "UAH", DateTime.Now, "Успішно", "Готівка", utility_Bills.Company_Name, "");
+                    checkBox.Checked = false;
+                    
                     }
-                }
+               
+            }
             
+                payUtilityBills_Btn.Enabled = false;
         }
 
 
@@ -1560,13 +1630,35 @@ namespace ATM_APP
             }
         }
 
+        private void ReloadUtilityBillsInfo()
+        {
+            GlobalUtility_Bills.ClearUtility_Bills();
+            ReadUserBills();
+            if (GlobalUtility_Bills.utility_Bills.Count > 0)
+            {
+                utility_Bills = GlobalUtility_Bills.utility_Bills[0];
+            }
+        }
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
 
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+            ReloadUtilityBillsInfo();
+
+        }
     }
     //Ready
     public partial class InternetForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button payInternet_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
         private TextBox accountNumber_Tbx, address_Tbx, transferAmount_Tbx;
@@ -1580,6 +1672,7 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
             AddTextBox();
+            this.FormClosed += Close_Form;
            
 
         }
@@ -1606,7 +1699,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            payInternet_Btn = buttons[0];
 
         }
 
@@ -1686,6 +1779,8 @@ namespace ATM_APP
                         databaseManager.UpdateCardData(user.CardNumber, user.CardType, user.IssueDate, user.ExpirationDate,
                     user.FullName, user.Address, user.CVV_CVC, user.Password, int.Parse(user.Balance), user.CardStatus,
                     user.PaymentSystem, user.SpendingLimit, user.IssuingBank);
+                   await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Оплата за інтернет",
+   requiredAmount, "UAH", DateTime.Now, "Успішно",user.CardNumber, accountNumber_Tbx.Text, "");
                     }
                 else
                 {
@@ -1698,10 +1793,13 @@ namespace ATM_APP
                     FundsСontributed_Lab.Refresh();
                     // Оновлення даних про оплату в базі даних
                     UpdateInternetData(DateTime.Now.ToString(), 1);
-
-                    MessageBox.Show($"Ви успішно сплатили {transferAmount}$ за послуги з інтернету. Залишок {remainingAmount}$ був перенесений на вашу картку.");
+                     await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Оплата за інтернет",
+      requiredAmount, "UAH", DateTime.Now, "Успішно", "Готівка", accountNumber_Tbx.Text, "");
+                        MessageBox.Show($"Ви успішно сплатили {transferAmount}$ за послуги з інтернету. Залишок {remainingAmount}$ був перенесений на вашу картку.");
                 }
-            }
+                    payInternet_Btn.Enabled = false;
+                }
+
             else
             {
                 MessageBox.Show("Введіть суму більшу або рівну суму до внесення");
@@ -1800,12 +1898,32 @@ namespace ATM_APP
             }
         }
 
+        private void ReloadInternetInfo()
+        {
+
+            GetInternetDataByAddressAndAccountNumber();
+            if(GlobalInternetData.internet.Count>0)
+            internet = GlobalInternetData.internet[0];
+        }
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
+
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+            ReloadInternetInfo();
+        }
     }
     //Ready
     public partial class TransferToTheCardForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button TransferToCard_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
         private TextBox UserCard_Tbx, AmountTransfer_Tbx, Designation_Tbx;
@@ -1842,7 +1960,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            TransferToCard_Btn = buttons[0];
 
         }
 
@@ -1933,11 +2051,7 @@ namespace ATM_APP
                         // Оновлення балансу користувача
                         UpdateUserBalance(user.CardNumber, transferAmount);
 
-                        // Очищення списку користувачів та списку карток
-                        GlobalData.ClearUsers();
-                        // Перезавантаження даних користувача та картки отримувача
-                        Log_In.GetUserByCardNumberAndPassword();
-                        user = GlobalData.Users[0];
+                        ReloadUserInfo();
                         // Оновлення даних картки користувача в базі даних
                         databaseManager.UpdateCardData(user.CardNumber, user.CardType, user.IssueDate, user.ExpirationDate,
                             user.FullName, user.Address, user.CVV_CVC, user.Password, int.Parse(user.Balance), user.CardStatus,
@@ -1958,8 +2072,10 @@ namespace ATM_APP
                         
                         DatabaseManager.LoadCardRegistriesFromDatabase(UserCard_Tbx.Text);
                          receiverCard = GlobalCardlData.CardRegistries[0];
-
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ на картку",
+ transferAmount, "UAH", DateTime.Now, "Успішно", user.CardNumber, UserCard_Tbx.Text, Designation_Tbx.Text);
                         MessageBox.Show("Ви успішно здійснили переказ коштів на картку", "Успішно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        TransferToCard_Btn.Enabled = false;
                     }
                     else
                     {
@@ -1994,9 +2110,14 @@ namespace ATM_APP
 
                         DatabaseManager.LoadCardRegistriesFromDatabase(UserCard_Tbx.Text);
                         receiverCard = GlobalCardlData.CardRegistries[0];
+
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ на картку",
+ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", UserCard_Tbx.Text, Designation_Tbx.Text);
+                        TransferToCard_Btn.Enabled = false;
                     }
                 }
             }
+            
         }
 
 
@@ -2095,12 +2216,24 @@ namespace ATM_APP
             buttons[0].Enabled = false;
         }
 
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
+
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+        }
     }
     //Ready
     public partial class TransferByRequisitesForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button IbanTransfer_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
         private Label FundsСontributed_Lab, paidAmount_Label;
@@ -2113,7 +2246,7 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
             AddTextBox();
-
+            this.FormClosing += Close_Form;
 
         }
         private void AddButtons()
@@ -2139,7 +2272,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            IbanTransfer_Btn = buttons[0];
 
         }
 
@@ -2188,11 +2321,11 @@ namespace ATM_APP
             if (result == DialogResult.Yes)
             {
                 // Логіка для переказу коштів з картки на картку
-                MessageBox.Show("Nothing Work");
+               
                 // Перевірка наявності коштів на рахунку
                 if (GlobalCompanyDetails.companies.Count > 0)
                 {
-                    MessageBox.Show("ALL WORK");
+                    
 
                     // Перевірка достатньої суми для переказу
                     int transferAmount = int.Parse(AmountTransfer_Tbx.Text);
@@ -2204,32 +2337,36 @@ namespace ATM_APP
                         // Оновлення балансу користувача
                         TransferToTheCardForm.UpdateUserBalance(user.CardNumber, transferAmount);
 
-                        // Очищення списку користувачів та списку карток
-                        GlobalData.ClearUsers();
-                        // Перезавантаження даних користувача та картки отримувача
-                        Log_In.GetUserByCardNumberAndPassword();
-                        user = GlobalData.Users[0];
+                        ReloadUserInfo();
 
                         // Оновлення балансу картки отримувача
                         company.AccountBalance += transferAmount;
 
                         databaseManager.UpdateCompanyData(company.IBAN, company.Company_Name, company.Country,
-                            company.Address,company.ContactPerson, company.Phone, 
+                            company.Address, company.ContactPerson, company.Phone,
                             company.TIN, company.EDRPOU, company.AccountBalance);
 
-                       GlobalCompanyDetails.ClearCompanyDetails();
+                        GlobalCompanyDetails.ClearCompanyDetails();
 
 
-                        
+
                         DatabaseManager.LoadCompanyDetailsFromDatabase(IBAN_Tbx.Text);
                         company = GlobalCompanyDetails.companies[0];
 
                         MessageBox.Show("Ви успішно здійснили переказ коштів на картку", "Успішно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ за реквізитами",
+ transferAmount, "UAH", DateTime.Now, "Успішно", user.CardNumber, IBAN_Tbx.Text, Designation_Tbx.Text);
+                        IbanTransfer_Btn.Enabled = false;
                     }
                     else
                     {
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ за реквізитами",
+transferAmount, "UAH", DateTime.Now, "Неспішно", user.CardNumber, IBAN_Tbx.Text, Designation_Tbx.Text);
                         MessageBox.Show("Сума переказу перевищує баланс рахунку", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
                     }
+
+
                 }
 
             }
@@ -2259,6 +2396,9 @@ namespace ATM_APP
 
                         DatabaseManager.LoadCompanyDetailsFromDatabase(IBAN_Tbx.Text);
                         company = GlobalCompanyDetails.companies[0];
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ за реквізитами",
+transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", IBAN_Tbx.Text, Designation_Tbx.Text);
+                        IbanTransfer_Btn.Enabled = false;
                     }
                 }
             }
@@ -2315,11 +2455,24 @@ namespace ATM_APP
                 MessageBox.Show("Такої картки не існує");
             }
         }
+
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
+
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+        }
     }
     public partial class CharityForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
         private Button[] buttons;
+        private Button FundTransfer_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
         private Label FundsСontributed_Lab, paidAmount_Label;
@@ -2331,6 +2484,7 @@ namespace ATM_APP
             AddButtons();
             AddLabel();
             AddTextBox();
+            this.FormClosing += Close_Form;
         }
         private void AddButtons()
         {
@@ -2355,7 +2509,7 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
-
+            FundTransfer_Btn = buttons[0];
 
         }
 
@@ -2440,10 +2594,15 @@ namespace ATM_APP
                         DatabaseManager.LoadCharityFondFromDatabase(FondName_Tbx.Text);
                         charityFond = GlobalCharityFond.CharityFonds[0];
 
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ в фонд {charityFond.FondName}",
+transferAmount, "UAH", DateTime.Now, "Успішно", user.CardNumber, FondName_Tbx.Text, Designation_Tbx.Text);
                         MessageBox.Show("Ви успішно здійснили переказ коштів на картку", "Успішно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FundTransfer_Btn.Enabled = false;
                     }
                     else
                     {
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ в фонд {charityFond.FondName}",
+transferAmount, "UAH", DateTime.Now, "Помилка", user.CardNumber, FondName_Tbx.Text, Designation_Tbx.Text);
                         MessageBox.Show("Сума переказу перевищує баланс рахунку", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
@@ -2474,6 +2633,9 @@ namespace ATM_APP
 
                         DatabaseManager.LoadCharityFondFromDatabase(FondName_Tbx.Text);
                         charityFond = GlobalCharityFond.CharityFonds[0];
+                        await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, $"Переказ в фонд {charityFond.FondName}",
+transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondName_Tbx.Text, Designation_Tbx.Text);
+                        FundTransfer_Btn.Enabled = false;
                     }
                 }
             }
@@ -2531,6 +2693,20 @@ namespace ATM_APP
                 MessageBox.Show("Такої картки не існує");
             }
         }
+
+        private void ReloadUserInfo()
+        {
+            GlobalData.ClearUsers();
+            Log_In.GetUserByCardNumberAndPassword();
+            user = GlobalData.Users[0];
+
+        }
+        private void Close_Form(object sender, EventArgs e)
+        {
+            ReloadUserInfo();
+            
+
+        }
     }
 
     public partial class PaymentHistoryForm : Base_Form
@@ -2539,11 +2715,12 @@ namespace ATM_APP
         private Button[] buttons;
         private Label[] labels;
         private TextBox[] textBoxes;
+        User user = GlobalData.Users[0];
         public PaymentHistoryForm() : base("Історія платежів", Resource_Paths.PaymentHistoryForm)
         {
             AddLabel();
-            AddPanel();
-
+            //addListView();
+            CreateMyDataGridView(user.ID);
 
         }
         
@@ -2559,40 +2736,108 @@ namespace ATM_APP
         
         }
 
-        private void AddPanel()
-        {
-            // Створюємо флоу-панель
-            FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel();
-             // Заповнює батьківський контейнер
-            flowLayoutPanel.FlowDirection = FlowDirection.LeftToRight; // Змінюємо напрямок розташування
-            flowLayoutPanel.Size = new Size(465,167);
-            flowLayoutPanel.Location = new Point(190,405);
-            flowLayoutPanel.BackColor = Color.Transparent;
-            // Додаємо флоу-панель до форми
-            Controls.Add(flowLayoutPanel);
+       
 
-            // Додаємо мітки до флоу-панелі
-            for (int i = 0; i < 9; i++)
+
+
+        public void CreateMyDataGridView(int userId)
+        {
+            // Створити новий контейнер для DataGridView з прокруткою.
+            Panel panel = new Panel();
+            panel.Bounds = new Rectangle(new Point(190, 435), new Size(465, 168));
+
+            // Створити новий елемент керування DataGridView.
+            DataGridView dataGridView1 = new DataGridView();
+            dataGridView1.Dock = DockStyle.Fill; // Заповнити весь доступний простір в контейнері.
+            dataGridView1.GridColor = Color.FromArgb(218, 218, 218);
+            dataGridView1.BorderStyle = BorderStyle.None;
+            dataGridView1.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            // Встановити вигляд для відображення деталей.
+            dataGridView1.AutoGenerateColumns = false;
+            dataGridView1.ColumnHeadersVisible = false; // Приховати заголовки стовпців
+
+            // Створити стовпці для елементів та піделементів.
+            DataGridViewTextBoxColumn column1 = new DataGridViewTextBoxColumn();
+            column1.DataPropertyName = "TransactionType";
+            column1.Width = 293;
+            column1.DefaultCellStyle.WrapMode = DataGridViewTriState.True; // Додано перенесення тексту
+            column1.DefaultCellStyle.BackColor = Color.FromArgb(218, 218, 218); // Змінено колір фону
+            column1.HeaderCell.Style.BackColor = Color.FromArgb(218, 218, 218); // Змінено колір фону заголовка
+
+            DataGridViewTextBoxColumn column2 = new DataGridViewTextBoxColumn();
+            column2.DataPropertyName = "Amount";
+            column2.Width = 86;
+            column2.DefaultCellStyle.WrapMode = DataGridViewTriState.True; // Додано перенесення тексту
+            column2.DefaultCellStyle.BackColor = Color.FromArgb(218, 218, 218); // Змінено колір фону
+            column2.HeaderCell.Style.BackColor = Color.FromArgb(218, 218, 218); // Змінено колір фону заголовка
+
+            DataGridViewTextBoxColumn column3 = new DataGridViewTextBoxColumn();
+            column3.DataPropertyName = "Timestamp";
+            column3.Width = 83;
+            column3.DefaultCellStyle.WrapMode = DataGridViewTriState.True; // Додано перенесення тексту
+            column3.DefaultCellStyle.BackColor = Color.FromArgb(218, 218, 218); // Змінено колір фону
+            column3.HeaderCell.Style.BackColor = Color.FromArgb(218, 218, 218); // Змінено колір фону заголовка
+
+            dataGridView1.EnableHeadersVisualStyles = false;
+
+            // Додати стовпці до DataGridView.
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { column1, column2, column3 });
+
+            // Отримати дані для користувача
+            GlobalTransactionData.ClearTransactions();
+            GlobalTransactionData.LoadTransactions(userId);
+
+            // Заповнити DataGridView даними
+            foreach (var transaction in GlobalTransactionData.Transactions)
             {
-                Label label = new Label();
-                label.Text = $"Мітка {i + 1}";
-                flowLayoutPanel.Controls.Add(label);
+                dataGridView1.Rows.Add(transaction.TransactionType, transaction.Amount, transaction.Timestamp);
             }
 
-            // Налаштовуємо властивості флоу-панелі
-            flowLayoutPanel.WrapContents = true; // Забороняємо автоматичний перенос елементів на новий рядок
-           // flowLayoutPanel.AutoSize = true; // Автоматично встановлюємо розмір флоу-панелі залежно від вмісту
+            // Приховати бокову панель навігації.
+            dataGridView1.RowHeadersVisible = false;
+
+            // Заборонити сортування даних.
+            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                column.ReadOnly = true;
+            }
+
+            // Заборонити користувачеві редагувати дані в DataGridView.
+            dataGridView1.ReadOnly = true;
+
+            // Заборонити зміну розміру комірок.
+            dataGridView1.AllowUserToResizeColumns = false;
+            dataGridView1.AllowUserToResizeRows = false;
+            column1.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            column2.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            column3.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Вирівняти дані у центрі для другого стовпчика.
+            dataGridView1.Columns[1].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Вирівняти дані у центрі для третього стовпчика.
+            dataGridView1.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Адаптувати висоту рядка під самий високий елемент.
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            // Встановити колір виділення для комірок, щоб зробити його непомітним
+            dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(218, 218, 218);
+            dataGridView1.DefaultCellStyle.SelectionForeColor = dataGridView1.DefaultCellStyle.ForeColor;
+
+            // Заборонити виділення рядків при натисканні
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.MultiSelect = false;
+
+            // Додати DataGridView до панелі.
+            panel.Controls.Add(dataGridView1);
+
+            // Додати панель з прокруткою до форми або іншого контейнера.
+            this.Controls.Add(panel);
         }
 
 
-
-
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            //Log_In log_In_Form = new Log_In();
-            //log_In_Form.ShowDialog();
-            //this.Close();
-        }
     }
 
    

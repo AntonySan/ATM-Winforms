@@ -340,6 +340,50 @@ namespace ATM_APP
             }
         }
 
+        public static async Task InsertTransaction(string connectionString, int userId, string transactionType, decimal amount, string currency, DateTime timestamp, string status, string? sourceAccountId, string? destinationAccountId, string description)
+        {
+            MessageBox.Show("22222222");
+            string query = @"INSERT INTO Transactions 
+                     ([user_id], [transaction_type], [amount], [currency], [timestamp], [status], [source_account], [destination_account], [description])
+                     VALUES
+                     (@userId, @transactionType, @amount, @currency, @timestamp, @status, @sourceAccount, @destinationAccount, @description)";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+            
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@transactionType", transactionType);
+                    command.Parameters.AddWithValue("@amount", amount);
+                    command.Parameters.AddWithValue("@currency", currency);
+                    command.Parameters.AddWithValue("@timestamp", timestamp);
+                    command.Parameters.AddWithValue("@status", status);
+                    command.Parameters.AddWithValue("@sourceAccount", (object)sourceAccountId ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@destinationAccount", (object)destinationAccountId ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@description", (object)description ?? DBNull.Value);
+
+                    try
+                    {
+                        connection.Open();
+                        int rowsAffected = command.ExecuteNonQuery();
+                        MessageBox.Show("Дані успішно додані до таблиці Transactions.");
+                    }
+                    catch (SqlException ex)
+                    {
+                       MessageBox.Show("SQL помилка: " + ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Помилка: " + ex.Message);
+                    }
+                    finally
+                    {
+                        connection.Close(); // Закриття підключення навіть у випадку виникнення виключення
+                    }
+                }
+            }
+        }
 
 
     }
