@@ -1,0 +1,18 @@
+===================================
+Date: 2024-05-23
+===================================
+ID: 17
+Card Number: 1111 2222 3333 4444
+Full Name: Іванова Аура Іванівна
+Password: 1111
+Expiration Date: 12/25
+Payment System: VISA      
+Balance: 9364
+Address: ikea
+Issue Date: 10.04.2021
+CVV/CVC: 999
+Card Status: Активна
+Spending Limit: 50000
+Issuing Bank: Aura
+Card Type: дебетова
+------------------------------

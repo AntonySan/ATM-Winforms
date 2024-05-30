@@ -22,4 +22,10 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ATM_CryptoGuardian">
+      <HintPath>..\ATM_CryptoGuardian\bin\Debug\net7.0\ATM_CryptoGuardian.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

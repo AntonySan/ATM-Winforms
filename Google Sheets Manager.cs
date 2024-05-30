@@ -9,12 +9,12 @@ namespace ATM_Winforms
     internal class Google_Sheets_Manager
     {
         // Параметри для Google Sheets API
-        static string ApplicationName = "Your Application Name";
-        static string SpreadsheetId = "Your Spreadsheet Id";
-        static string SheetName = "Your Sheet Name";
-        static string JsonFilePath =Resource_Paths.JsonFilePath;
-        static string DestinationPath = Resource_Paths.DataBase_XLSX;
-        static string[] Scopes = { SheetsService.Scope.Spreadsheets, DriveService.Scope.Drive };
+        public static string ApplicationName = "Your Application Name";
+        public static string SpreadsheetId = "1H77I8Jr2_YAf-gv1ONEDOWgRzo7WMl3_rMTJKtJwR7o";
+        public static string SheetName = "Sheet1";
+        public static string JsonFilePath =Resource_Paths.JsonFilePath;
+        public static string DestinationPath = Resource_Paths.DataBase_XLSX;
+        public static string[] Scopes = { SheetsService.Scope.Spreadsheets, DriveService.Scope.Drive };
          public Google_Drive google_Drive = new Google_Drive();
 
          public void Example()
@@ -34,6 +34,8 @@ namespace ATM_Winforms
 
             // Завантажуємо файл з Google Drive
             DownloadFile(driveService, SpreadsheetId, DestinationPath);
+
+
         }
 
 
@@ -97,6 +99,9 @@ namespace ATM_Winforms
             var outputStream = new System.IO.FileStream(destinationPath, System.IO.FileMode.Create, System.IO.FileAccess.Write);
             driveService.Files.Export(fileId, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").Download(outputStream);
             outputStream.Close();
+
+            
+
         }
 
     }

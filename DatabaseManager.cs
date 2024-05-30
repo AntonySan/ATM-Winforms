@@ -6,12 +6,15 @@ using System.Data.OleDb;
 using ATM_Winforms;
 using Microsoft.VisualBasic;
 using static ATM_Winforms.CompanyDetails;
+using ATM_CryptoGuardian;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ATM_APP
 {
    public  class DatabaseManager
     {
-                
+      
         public static void ConnectToDatabase(Form form)
         {
             string connString = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
@@ -270,6 +273,7 @@ namespace ATM_APP
                 }
             }
         }
+       
 
 
         public void UpdateCharityFondData(string fondName, string registrationNumber, string country, string address, string contactPerson, string phone, string email, string bankAccount, decimal accountBalance)
@@ -340,6 +344,8 @@ namespace ATM_APP
             }
         }
 
+
+       
         public static async Task InsertTransaction(string connectionString, int userId, string transactionType, decimal amount, string currency, DateTime timestamp, string status, string? sourceAccountId, string? destinationAccountId, string description)
         {
             MessageBox.Show("22222222");
@@ -386,5 +392,12 @@ namespace ATM_APP
         }
 
 
+        
+
+       
+
+
     }
 }
+
+

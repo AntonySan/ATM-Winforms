@@ -39,5 +39,21 @@ namespace ATM_APP
             textBox.Font = new Font("Segue UI",20);
             return textBox;
         }
+       
+       public ComboBox CreateComboBox(Point location, Size size, string[] items)
+        {
+            ComboBox comboBox = new ComboBox();
+            comboBox.Location = location;
+            comboBox.Size = size;
+            comboBox.DropDownStyle = ComboBoxStyle.DropDownList; // Пример настройки стиля выпадающего списка
+            comboBox.Font = new Font("Segoe UI", 12); // Пример настройки шрифта
+
+            if (items != null)
+            {
+                comboBox.Items.AddRange(items); // Добавляем элементы в ComboBox
+            }
+
+            return comboBox;
+        }
     }
 }

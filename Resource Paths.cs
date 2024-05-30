@@ -7,18 +7,41 @@ using System.Threading.Tasks;
 
 namespace ATM_Winforms
 {
-    internal class Resource_Paths
+    public class Resource_Paths
     {
         static string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+        private static readonly string currentYear = DateTime.Now.Year.ToString();
+
         public static string JsonFilePath { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Credentials", "atm-app-420409-a351e366fb93.json");
 
-        public static string DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,"Project Info", "Daily Report", $"database_{currentDate}.txt");    
+        public static string DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,"Project Info", "Daily Report", $"database_{currentDate}.txt");
+        public static string Users_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "Users" );
+        public static string UTilityBils_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "UTilityBils");
+        public static string Transaction_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "Transactiont");
+        public static string Internet_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "Internet");
+        public static string Fines_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "Fines");
+        public static string CompanyDetails_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "Company Details");
 
+        public static string CharityFonds_DailyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Daily Report", "CharityFonds");
         public static string MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthy Report");
+        public static string Users_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string UTilityBils_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string Transaction_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string Internet_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string Fines_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string CompanyDetails_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string CharityFonds_MonthlyReport { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Project Info", "Monthly Report", currentYear);
+        public static string DataBase_XLSX { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,  "Project Info", "DataBase XLSX", "daily report.xlsx");
 
-        public static string DataBase_XLSX { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName,  "Project Info", "DataBase XLSX", "daily report.txt");
+
+
 
         public static string Logo_imagine { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "image_2024-03-22_13-58-24.ico");
+
+
+
+
+
 
         public static string InsertCardForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "InsertCardForm.png");
         public static string LoginForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "LoginForm.png");
@@ -33,6 +56,18 @@ namespace ATM_Winforms
         public static string TransferByRequisitesForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "TransferByRequisitesForm.png");
         public static string TransferToTheCardForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "TransferToTheCardForm.png");
         public static string UtilityBillsForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "UtilityBillsForm.png");
+                
+        public static string MainSupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup1.png");
+        public static string CardSupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup2.png");
+        public static string CharitySupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup3.png");
+        public static string ComanySupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup4.png");
+        public static string InternetSupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup5.png");
+        public static string UtilityBillsSupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup6.png");
+        public static string FinesSupForm { get; } = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Form imagines", "AuraBankSup7.png");
+
+
+
+
 
         public static string DB_connectionString { get; } = "Data Source=.\\sqlexpress;Initial Catalog=ATM;Integrated Security=True";
     }

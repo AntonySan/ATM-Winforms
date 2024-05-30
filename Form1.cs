@@ -16,6 +16,12 @@ using System.Runtime.CompilerServices;
 using static ATM_Winforms.CompanyDetails;
 using ATM_Winforms.Design_Forms;
 using System.Security.Cryptography.Xml;
+using Google.Apis.Drive.v3;
+using Google.Apis.Sheets.v4.Data;
+using Color = System.Drawing.Color;
+using System.Security.Cryptography;
+using ATM_CryptoGuardian;
+
 
 namespace ATM_APP
 {
@@ -82,6 +88,7 @@ namespace ATM_APP
  {
      DatabaseManager databaseManager = new DatabaseManager();
      Create_Ui_Element create_ui_element = new Create_Ui_Element();
+        ReportManager reportManager = new ReportManager();
      //const string connString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\"C:\\Users\\anton\\source\\repos\\ATM Winforms\\Database1.accdb\";Persist Security Info=True";
      //SqlConnection sqlConnection = new SqlConnection(connString);
      private Button[] buttons;
@@ -90,11 +97,106 @@ namespace ATM_APP
         File_Creator fileCreator = new File_Creator();
 
      public InsertCardForm() : base("InsertCard", Resource_Paths.InsertCardForm)
-     {
-         InitializeComponent();
+        {
+            //EncryptData();
+        
+            InitializeComponent();
+         //  TimedDailyReport();
+           // TimedMonthlyReport();
+            
+
      }
 
+     private void TimedDailyReport()
+        {
+            // Ініціалізація таймера
+            System.Timers.Timer timer = new System.Timers.Timer();
+
+            // Встановлення інтервалу таймера (24 години)
+            timer.Interval = TimeSpan.FromHours(24).TotalMilliseconds;
+
+            // Встановлення часу спрацювання події (о 12:00)
+            DateTime now = DateTime.Now;
+            DateTime nextNoon = new DateTime(now.Year, now.Month, now.Day, 0,0, 0);
+            if (now > nextNoon)
+                nextNoon = nextNoon.AddDays(1);
+            double intervalToNoon = (nextNoon - now).TotalMilliseconds;
+            timer.Interval = intervalToNoon;
+
+            // Додавання обробника події
+            timer.Elapsed += (sender, e) => {
+                // Виконання необхідного коду
+                GlobalData.GetAllUser();
+                GlobalFines.GetAllFines();
+                GlobalUtility_Bills.GetAllUserBills();
+                GlobalInternetData.GetAllInternetData();
+                GlobalTransactionData.GetAllTransactions();
+                GlobalCompanyDetails.GetAllCompanyDetails();
+                GlobalCharityFond.GetAllCharityFond();
+                reportManager.GenerateAndUploadReports();
+                ClearAllData();
+            };
+
+            // Запуск таймера
+            timer.Start();
+
+            Console.WriteLine("Додаток запущено. Натисніть Enter для завершення.");
+            Console.ReadLine();
+        }
+        private void TimedMonthlyReport()
+        {
+            // Ініціалізація таймера
+            System.Timers.Timer timer = new System.Timers.Timer();
+
+            // Метод для обчислення інтервалу до наступного першого числа місяця о 00:00
+            double CalculateIntervalToNextMonth()
+            {
+                DateTime now = DateTime.Now;
+                DateTime nextFirstOfMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0).AddMonths(1);
+                return (nextFirstOfMonth - now).TotalMilliseconds;
+            }
+
+            // Встановлення початкового інтервалу таймера
+            timer.Interval = CalculateIntervalToNextMonth();
+
+            // Додавання обробника події
+            timer.Elapsed += (sender, e) =>
+            {
+                // Виконання необхідного коду
+                GlobalData.GetAllUser();
+                GlobalFines.GetAllFines();
+                GlobalUtility_Bills.GetAllUserBills();
+                GlobalInternetData.GetAllInternetData();
+                GlobalTransactionData.GetAllTransactions();
+                GlobalCompanyDetails.GetAllCompanyDetails();
+                GlobalCharityFond.GetAllCharityFond();
+                reportManager.GenerateAndUploadReports();
+                ClearAllData();
+                // Повторне встановлення інтервалу таймера до наступного першого числа місяця
+                timer.Interval = CalculateIntervalToNextMonth();
+            };
+
+            // Запуск таймера
+            timer.Start();
+
+            Console.WriteLine("Додаток запущено. Натисніть Enter для завершення.");
+            Console.ReadLine();
+        }
         
+        
+
+
+        private void ClearAllData()
+        {
+            GlobalData.ClearUsers();
+            GlobalFines.ClearFines();
+            GlobalUtility_Bills.ClearUtility_Bills();
+            GlobalInternetData.ClearInternet();
+            GlobalTransactionData.ClearTransactions();
+            GlobalCompanyDetails.ClearCompanyDetails();
+            GlobalCharityFond.ClearCharityFonds();
+        }
+
         private void InitializeComponent()
      {
          this.ClientSize = new Size(828, 599);
@@ -109,26 +211,15 @@ namespace ATM_APP
           string connString = Resource_Paths.DB_connectionString;
 
           DatabaseManager.ConnectToDatabase(this);
-          //Dictionary<string, object> parameters = new Dictionary<string, object>();
-          //parameters.Add("Transaction_id", "1234 5467 4444 1324");
-          //parameters.Add("PIN", "1111");
-          // SqlConnection sqlConnection = new SqlConnection(connString);
 
-          //DatabaseManager.WriteData(sqlConnection, "Transaction1", parameters);
+          
 
 
 
 
-//Encryption_Manager encryption_Manager = new Encryption_Manager();
-//encryption_Manager.Example();
+        }
 
-// ds.IsSSDSerialNumberValid(File_Creator.GetHardDriveSerialNumber());
-
-
-
-    }
-
-    private void AddButtons()
+        private void AddButtons()
     {
         string[] ButtonText = { "Вставити картку" };
 
@@ -258,92 +349,86 @@ namespace ATM_APP
         }
         private void ExitButton_Click(object sender, EventArgs e)
         {
+
+           
             VerifyCardAndPin();
            
             
         }
         private void VerifyCardAndPin()
         {
+            
+
             using (SqlConnection connection = new SqlConnection(Resource_Paths.DB_connectionString))
             {
-                // Відкриваємо з'єднання з базою даних
                 connection.Open();
+              
+                string query = "SELECT PIN FROM ATM_info WHERE Card_number = @NumberCard";
 
-                // Складаємо SQL-запит для вибору запису з таблиці, де номер картки і пін співпадають з введеними користувачем
-                string query = "SELECT COUNT(*) FROM ATM_info WHERE Card_number = @NumberCard AND PIN = @Pin";
-
-                // Створюємо команду SQL
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    // Параметризуємо запит, передаючи значення з NumberCard_Tbx та Pin_Tbx
                     command.Parameters.AddWithValue("@NumberCard", NumberCard_Tbx.Text);
-                    command.Parameters.AddWithValue("@Pin", Pin_Tbx.Text);
+                    string storedHash = (string)command.ExecuteScalar();
 
-                    // Виконуємо запит та отримуємо результат
-                    int count = (int)command.ExecuteScalar();
-                   
-                    // Перевіряємо, чи знайдено запис, що відповідає введеним даним
-                    if (count > 0)
+                    if (storedHash != null && Hashing_Service.BCryptVerifyPassword(Pin_Tbx.Text, storedHash))
                     {
                         GetUserByCardNumberAndPassword();
                         Main_Menu main_Menu = new Main_Menu();
                         main_Menu.FormClosed += (s, args) => this.Close(); // Додати обробник події FormClosed
-
                         main_Menu.Show();
                         this.Hide();
-                      
                     }
                     else
                     {
-                        // Якщо запис не знайдено, виводиться повідомлення про помилку
                         MessageBox.Show("Неправильний номер картки або Пін!");
-                        
                     }
                 }
             }
         }
+
         public static void GetUserByCardNumberAndPassword()
         {
-            
+           
+            RSAParameters alicePrivateKey = RSAKeyManager.LoadPrivateKey();
+
             using (SqlConnection conn = new SqlConnection(Resource_Paths.DB_connectionString))
-                {
+            {
                 conn.Open();
-
-                string query = "SELECT * FROM ATM_info WHERE Card_number = @CardNumber AND PIN = @Password";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-
-                    // Передача значень параметрів в запит
+              
+                string query = "SELECT * FROM ATM_info WHERE Card_number = @CardNumber";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
                     cmd.Parameters.AddWithValue("@CardNumber", NumberCard_Tbx.Text);
-                    cmd.Parameters.AddWithValue("@Password", Pin_Tbx.Text);
-
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    // Читання результатів запиту
                     if (reader.Read())
                     {
-                    int id = (int)reader["Id"];
-                    string retrievedCardNumber = reader["Card_number"].ToString();
-                    string name = reader["Full_name"].ToString();
-                    string retrievedPassword = reader["PIN"].ToString();
-                    string expirationDate = reader["Expiration_date"].ToString();
-                    string paymentSystem = reader["Payment_system"].ToString();
-                    string balance = reader["balance"].ToString();
-                    string address = reader["address"].ToString();
-                    string issueDate = reader["Issue_Date"].ToString();
-                    string cvv_cvc = reader["CVV/CVC "].ToString();
-                    string cardStatus = reader["Card_Status"].ToString();
-                    string spendingLimit = reader["Spending_Limit"].ToString();
-                    string issuingBank = reader["Issuing_bank"].ToString();
-                    string cardType = reader["Card_Type"].ToString();
+                        int id = (int)reader["Id"];
+                        string retrievedCardNumber = reader["Card_number"].ToString();
+                        string name = reader["Full_name"].ToString();
+                        string retrievedPassword = reader["PIN"].ToString();
+                        string expirationDate = reader["Expiration_date"].ToString();
+                        string paymentSystem = reader["Payment_system"].ToString();
+                        string balance = reader["balance"].ToString();
+                        string address = reader["address"].ToString();
+                        string issueDate = reader["Issue_Date"].ToString();
+                        string cvv_cvc = reader["CVV/CVC "].ToString();
+                        string cardStatus = reader["Card_Status"].ToString();
+                        string spendingLimit = reader["Spending_Limit"].ToString();
+                        string issuingBank = reader["Issuing_bank"].ToString();
+                        string cardType = reader["Card_Type"].ToString();
 
-                    // Створюємо об'єкт користувача та додаємо його до списку
-                    User user = new User(id, retrievedCardNumber, name, retrievedPassword, expirationDate, paymentSystem, balance, address, issueDate, cvv_cvc, cardStatus, spendingLimit, issuingBank, cardType);
-                    GlobalData.Users.Add(user);
+                        // Створюємо об'єкт користувача та додаємо його до списку
+                        User user = new User(id, retrievedCardNumber, name, retrievedPassword, expirationDate, paymentSystem, balance, address, issueDate, cvv_cvc, cardStatus, spendingLimit, issuingBank, cardType);
+                        GlobalData.Users.Add(user);
                     }
 
                     reader.Close();
                 }
+            }
         }
+
+     
 
 
     }
@@ -814,7 +899,7 @@ namespace ATM_APP
 
             textBoxes = create_ui_element.CreateTextBox(1, this, TextBoxlocation, TextBoxsize);
             AmountToPay_Tbx = textBoxes[0];
-            AmountToPay_Tbx.BackColor = Color.FromArgb(191, 191, 191);
+            AmountToPay_Tbx.BackColor = System.Drawing.Color.FromArgb(191, 191, 191);
             AmountToPay_Tbx.Leave += AmountToPay_Tbx_Leave;
 
         }
@@ -1572,7 +1657,7 @@ namespace ATM_APP
             {
                 connection.Open();
 
-                string query = @"SELECT ATM_info.Full_name, ATM_info.address, Utility_Сompanies.Id, Utility_Сompanies.Compani_name, Utility_Сompanies.Amount,Utility_Сompanies.paid
+                string query = @"SELECT ATM_info.Full_name, ATM_info.address, Utility_Сompanies.Id, Utility_Сompanies.Compani_name, Utility_Сompanies.Amount,Utility_Сompanies.tariff,Utility_Сompanies.used,Utility_Сompanies.paid
             FROM ATM_info
             JOIN Utility_Сompanies ON ATM_info.address = Utility_Сompanies.Address
             WHERE ATM_info.Card_number = @CardNumber AND ATM_info.Full_name = @FullName AND Utility_Сompanies.paid = 0";
@@ -1591,10 +1676,12 @@ namespace ATM_APP
                         string address = reader["address"].ToString();
                         string companyName = reader["Compani_name"].ToString();
                         int amountToPay = Convert.ToInt32(reader["Amount"]);
+                        string tariff = reader["tariff"].ToString();
+                        string used = reader["used"].ToString();
                         string is_paid = reader["paid"].ToString();
 
                         // Створення об'єкту з отриманих даних і додавання його до списку
-                        Utility_Bills userData = new Utility_Bills(id, userFullName,companyName, amountToPay, address, is_paid);
+                        Utility_Bills userData = new Utility_Bills(id, userFullName,companyName, amountToPay, address, tariff, used, is_paid);
                         GlobalUtility_Bills.utility_Bills.Add(userData);
                         MessageBox.Show(address);
                     }
@@ -1661,7 +1748,7 @@ namespace ATM_APP
         private Button payInternet_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
-        private TextBox accountNumber_Tbx, address_Tbx, transferAmount_Tbx;
+        private static TextBox accountNumber_Tbx, address_Tbx, transferAmount_Tbx;
         private Label FundsСontributed_Lab , paidAmount_Label;
         private static Internet internet = GlobalInternetData.internet[0];
         private User user = GlobalData.Users[0];
@@ -1849,7 +1936,7 @@ namespace ATM_APP
             buttons[0].Enabled = false;
             }
         }
-        public  void GetInternetDataByAddressAndAccountNumber()
+        public static void GetInternetDataByAddressAndAccountNumber()
         {
             GlobalInternetData.ClearInternet(); // Очищаємо список, щоб заповнити його новими даними
 
@@ -1869,17 +1956,24 @@ namespace ATM_APP
                     {
                         int id = (int)reader["Id"];
                         string accNumber = reader["Account_number"].ToString();
+                        string address = reader["Address"].ToString();
                         int paid = (int)reader["Paid"];
                         int transferAmount = (int)reader["Transfer_Amount"];
+                        string tariffPlan = reader["Tariff_Plan"].ToString();
+                        string paymentDate = reader["Payment_Date"].ToString();
+                        string serviceStatus = reader["Service_Status"].ToString();
+                        string dataUsage = reader["Data_Usage"].ToString();
+                        string userName = reader["User_Name"].ToString();
 
                         // Створюємо об'єкт інтернет-послуги та додаємо його до списку
-                        Internet internetData = new Internet(id, accNumber, paid, transferAmount);
+                        Internet internetData = new Internet(id, accNumber, address, paid, transferAmount, tariffPlan, paymentDate, serviceStatus, dataUsage, userName);
                         GlobalInternetData.internet.Add(internetData);
                     }
                 }
             }
         }
-        public  void UpdateInternetData( string paymentDate, int paid)
+
+        public void UpdateInternetData( string paymentDate, int paid)
         {
             using (SqlConnection connection = new SqlConnection(Resource_Paths.DB_connectionString))
             {
@@ -2840,6 +2934,564 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
 
     }
 
-   
+
+    public  class ReportManager
+    {
+        private File_Creator fileCreator;
+        private Google_Sheets_Manager googleSheetsManager;
+        private Google_Drive googleDrive;
+
+        public ReportManager()
+        {
+            fileCreator = new File_Creator();
+            googleSheetsManager = new Google_Sheets_Manager();
+            googleDrive = new Google_Drive();
+        }
+
+        public async void GenerateAndUploadReports()
+        {
+            var driveService = googleDrive.GetDriveService();
+            WriteUsersDataToGoogleSheet();
+            WriteUtilityBillsToGoogleSheet();
+            WriteTransactionsToGoogleSheet();
+            WriteFinesToGoogleSheet();
+            WriteCompaniesToGoogleSheet();
+            WriteCharitiesToGoogleSheet();
+            Google_Sheets_Manager.DownloadFile(driveService, Google_Sheets_Manager.SpreadsheetId, Resource_Paths.DataBase_XLSX);
+            if (fileCreator.SSD_serialNumber != null && fileCreator.IsSSDSerialNumberValid(fileCreator.SSD_serialNumber))
+            {
+                string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+                try
+                {
+                    // Генерація щоденного звіту
+                    fileCreator.DailyReport();
+                    DateTime previousMonthDate = DateTime.Now.AddMonths(-1);
+                    previousMonthDate.ToString("MMMM");
+
+                    // Отримання об'єкту сервісу Google Drive
+
+
+                    // Завантаження щоденного звіту на Google Диск
+                    string dailyReportPath = Resource_Paths.DailyReport;
+                    string folderId = "1THHQ1xNOR7dJ6MFPjL9qtXUYaTz3XLLc"; // Замість 'your-folder-id' вставте ідентифікатор папки на Google Диск
+                                                                           // Винесення шляхів до окремих змінних
+                    string usersDailyReportPath = Path.Combine(Resource_Paths.Users_DailyReport, $"Users database_{currentDate}.txt");
+                    string utilityBillsDailyReportPath = Path.Combine(Resource_Paths.UTilityBils_DailyReport, $"Utility Bills_{currentDate}.txt");
+                    string transactionDailyReportPath = Path.Combine(Resource_Paths.Transaction_DailyReport, $"Transactions_{currentDate}.txt");
+                    string internetDailyReportPath = Path.Combine(Resource_Paths.Internet_DailyReport, $"Internet Info_{currentDate}.txt");
+                    string finesDailyReportPath = Path.Combine(Resource_Paths.Fines_DailyReport, $"Fines_{currentDate}.txt");
+                    string companyDetailsDailyReportPath = Path.Combine(Resource_Paths.CompanyDetails_DailyReport, $"Company Details_{currentDate}.txt");
+                    string charityFondsDailyReportPath = Path.Combine(Resource_Paths.CharityFonds_DailyReport, $"Charity Fonds_{currentDate}.txt");
+
+                    // Завантаження файлів на Google Диск
+                    UploadFileToGoogleDrive(driveService, usersDailyReportPath, "1ktKRRfSc5ZKuegY3IeHqJPJALtYkvBqv");
+                    UploadFileToGoogleDrive(driveService, utilityBillsDailyReportPath, "1OfjEMCE0aOnmAM_KfnbV179DbQOlvsRm");
+                    UploadFileToGoogleDrive(driveService, transactionDailyReportPath, "1YRPsGD04Zu30J6RcEYJ3W5NQqI5H_0I1");
+                    UploadFileToGoogleDrive(driveService, internetDailyReportPath, "1w69mvKMOcrS7epwNNhjKMt6topAedTLi");
+                    UploadFileToGoogleDrive(driveService, finesDailyReportPath, "1T5ceGegBC6DRB9buSwCwSM_kbpM--z5F");
+                    UploadFileToGoogleDrive(driveService, companyDetailsDailyReportPath, "1mSJ575wyQTB6KBxtKQANtBX3qAdhd1f-");
+                    UploadFileToGoogleDrive(driveService, charityFondsDailyReportPath, "1zPDNLvmZRb9XPNBaOfvbWlhYNn4SYiZ0");
+
+                    // Перевірка, чи потрібно генерувати місячний звіт
+                    if (DateTime.Now.Day == 1) // Якщо перший день місяця
+                    {
+                        // Генерація місячного звіту
+                        fileCreator.MonthlyReport();
+                        string usersMontlyReportPath = Path.Combine(Resource_Paths.Users_MonthlyReport, $"Users database_{previousMonthDate}.txt");
+                        string utilityBillsMontlyReportPath = Path.Combine(Resource_Paths.UTilityBils_MonthlyReport, $"Utility Bills_{previousMonthDate}.txt");
+                        string transactionMontlyReportPath = Path.Combine(Resource_Paths.Transaction_MonthlyReport, $"Transactions_{previousMonthDate}.txt");
+                        string internetMontlyReportPath = Path.Combine(Resource_Paths.Internet_MonthlyReport, $"Internet Info_{previousMonthDate}.txt");
+                        string finesMontlyReportPath = Path.Combine(Resource_Paths.Fines_MonthlyReport, $"Fines_{previousMonthDate}.txt");
+                        string companyDetailsMontlyReportPath = Path.Combine(Resource_Paths.CompanyDetails_MonthlyReport, $"Company Details_{previousMonthDate}.txt");
+                        string charityFondsMontlyReportPath = Path.Combine(Resource_Paths.CharityFonds_MonthlyReport, $"Charity Fonds_{previousMonthDate}.txt");
+
+
+                     
+                        UploadFileToGoogleDrive(driveService, usersMontlyReportPath, folderId);
+                        UploadFileToGoogleDrive(driveService, utilityBillsMontlyReportPath, folderId);
+                        UploadFileToGoogleDrive(driveService, transactionMontlyReportPath, folderId);
+                        UploadFileToGoogleDrive(driveService, internetMontlyReportPath, folderId);
+                        UploadFileToGoogleDrive(driveService, finesMontlyReportPath, folderId);
+                        UploadFileToGoogleDrive(driveService, companyDetailsMontlyReportPath, folderId);
+                        UploadFileToGoogleDrive(driveService, charityFondsMontlyReportPath, folderId);
+                    }
+
+                   
+                    MessageBox.Show("Звіти успішно створено та завантажено на Google Диск.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Помилка при створенні або завантаженні звітів: {ex.Message}");
+                }
+            }
+            else
+            {
+                // Генерація щоденного звіту
+                fileCreator.DailyReport();
+
+                 driveService = googleDrive.GetDriveService();
+                MessageBox.Show("Серійний номер SSD недійсний або не знайдено.");
+
+                // Створення файлу на Google Диску
+                string fileName = $"Invalid_SSD_Serial_Number_{DateTime.Now.ToString("yyyy-MM-dd")}.txt";
+                string fileContent = "The SSD serial number is invalid or not found.";
+
+              
+
+                // Створення файлів для щоденних звітів
+                Google_Drive.CreateFileOnGoogleDrive(driveService, fileName, fileContent, "text/plain", "1dA9Vg5483SwgRAnVJ9sFFZmxgSxi4DRB");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Users.txt", GetUsersContent(), "text/plain", "1ktKRRfSc5ZKuegY3IeHqJPJALtYkvBqv");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Utility_Bills_Content.txt", GetUtilityBillsContent(), "text/plain", "1mSJ575wyQTB6KBxtKQANtBX3qAdhd1f-");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Transaction_Content.txt", GetTransactionContent(), "text/plain", "1YRPsGD04Zu30J6RcEYJ3W5NQqI5H_0I1");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Internet_Content.txt", GetInternetContent(), "text/plain", "1w69mvKMOcrS7epwNNhjKMt6topAedTLi");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Fine_Content.txt", GetFineContent(), "text/plain", "1T5ceGegBC6DRB9buSwCwSM_kbpM--z5F");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Company_Content.txt", GetCompanyContent(), "text/plain", "1mSJ575wyQTB6KBxtKQANtBX3qAdhd1f-");
+                Google_Drive.CreateFileOnGoogleDrive(driveService, "Charity_Content.txt", GetCharityContent(), "text/plain", "1zPDNLvmZRb9XPNBaOfvbWlhYNn4SYiZ0");
+
+                // Перевірка, чи потрібно генерувати місячний звіт
+                if (DateTime.Now.Day == 1) // Якщо перший день місяця
+                {
+                    string folderId = "1-0rJB2BLeekJcgpOIwIo7U4oSxRz5r51"; // Замість 'your-folder-id' вставте ідентифікатор папки на Google Диск
+                    try
+                    {
+                        // Отримання об'єкту сервісу Google Drive
+                         driveService = googleDrive.GetDriveService();
+                        DateTime previousMonthDate = DateTime.Now.AddMonths(-1);
+                        previousMonthDate.ToString("MMMM");
+                        // Генерація місячного звіту
+                        fileCreator.MonthlyReport();
+
+                       
+                        // Створення файлів для щоденних звітів
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, fileName, fileContent, "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Users.txt", GetUsersContent(), "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Utility_Bills_Content.txt", GetUtilityBillsContent(), "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Transaction_Content.txt", GetTransactionContent(), "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Internet_Content.txt", GetInternetContent(), "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Fine_Content.txt", GetFineContent(), "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Company_Content.txt", GetCompanyContent(), "text/plain", folderId);
+                        Google_Drive.CreateFileOnGoogleDrive(driveService, $"{previousMonthDate}_Charity_Content.txt", GetCharityContent(), "text/plain", folderId);
+
+                        MessageBox.Show("Місячний звіт успішно створено та завантажено на Google Диск.");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Помилка при створенні або завантаженні місячного звіту: {ex.Message}");
+                    }
+                }
+            }
+
+
+        }
+
+
+        private void GoogleSheetSend()
+        {
+            // Підготовка даних для Google Sheets
+            
+
+        }
+        private async void UploadFileToGoogleDrive(DriveService service, string filePath, string folderId)
+        {
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    Google_Drive.UploadFile(service, filePath, folderId);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Помилка при завантаженні файлу на Google Диск: {ex.Message}");
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Файл не знайдено: {filePath}");
+            }
+        }
+
+
+        public static string GetUsersContent()
+        {
+            // Отримання інформації про користувачів і формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+            foreach (var user in GlobalData.Users)
+            {
+                    content.AppendLine($"ID: {user.ID}");
+                    content.AppendLine($"Card Number: {user.CardNumber}");
+                content.AppendLine($"Full Name: {user.FullName}");
+                content.AppendLine($"Password: {user.Password}");
+                content.AppendLine($"Expiration Date: {user.ExpirationDate}");
+                content.AppendLine($"Payment System: {user.PaymentSystem}");
+                content.AppendLine($"Balance: {user.Balance}");
+                content.AppendLine($"Address: {user.Address}");
+                content.AppendLine($"Issue Date: {user.IssueDate}");
+                content.AppendLine($"CVV/CVC: {user.CVV_CVC}");
+                content.AppendLine($"Card Status: {user.CardStatus}");
+                content.AppendLine($"Spending Limit: {user.SpendingLimit}");
+                content.AppendLine($"Issuing Bank: {user.IssuingBank}");
+                content.AppendLine($"Card Type: {user.CardType}");
+                content.AppendLine("------------------------------");
+                
+                
+            }
+            return content.ToString();
+        }
+        public static string GetUtilityBillsContent()
+        {
+            // Отримання інформації про рахунки за комунальні послуги і формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+
+            foreach (var bill in GlobalUtility_Bills.utility_Bills)
+            {
+                content.AppendLine($"ID: {bill.Id}");
+                content.AppendLine($"User Name: {bill.User_Name}");
+                content.AppendLine($"Company Name: {bill.Company_Name}");
+                content.AppendLine($"Amount: {bill.Amount}");
+                content.AppendLine($"Address: {bill.Address}");
+                content.AppendLine($"Paid: {bill.Paid}");
+                content.AppendLine("------------------------------");
+            }
+
+            return content.ToString();
+        }
+
+        public static string GetTransactionContent()
+        {
+            // Отримання інформації про транзакції і формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+
+            foreach (var transaction in GlobalTransactionData.Transactions)
+            {
+                content.AppendLine($"Transaction ID: {transaction.TransactionId}");
+                content.AppendLine($"User ID: {transaction.UserId}");
+                content.AppendLine($"Transaction Type: {transaction.TransactionType}");
+                content.AppendLine($"Amount: {transaction.Amount}");
+                content.AppendLine($"Currency: {transaction.Currency}");
+                content.AppendLine($"Timestamp: {transaction.Timestamp}");
+                content.AppendLine($"Status: {transaction.Status}");
+                content.AppendLine($"Source Account: {transaction.SourceAccount}");
+                content.AppendLine($"Destination Account: {transaction.DestinationAccount}");
+                content.AppendLine($"Description: {transaction.Description}");
+                content.AppendLine("------------------------------");
+            }
+
+            return content.ToString();
+        }
+
+        public static string GetInternetContent()
+        {
+            // Отримання інформації про Інтернет-послуги та формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+
+            foreach (var internet in GlobalInternetData.internet)
+            {
+                content.AppendLine($"ID: {internet.Id}");
+                content.AppendLine($"Account Number: {internet.Account_Number}");
+                content.AppendLine($"Address: {internet.Address}");
+                content.AppendLine($"Paid: {internet.Paid}");
+                content.AppendLine($"Transfer Amount: {internet.Transfer_Amount}");
+                content.AppendLine($"Tariff Plan: {internet.Tariff_Plan}");
+                content.AppendLine($"Payment Date: {internet.Payment_Date}");
+                content.AppendLine($"Service Status: {internet.Service_Status}");
+                content.AppendLine($"Data Usage: {internet.Data_Usage}");
+                content.AppendLine($"User Name: {internet.User_Name}");
+                content.AppendLine("------------------------------");
+            }
+
+            return content.ToString();
+        }
+
+        public static string GetFineContent()
+        {
+            // Отримання інформації про штрафи та формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+
+            foreach (var fine in GlobalFines.Fines)
+            {
+                content.AppendLine($"ID: {fine.Id}");
+                content.AppendLine($"License Plates: {fine.LicensePlates}");
+                content.AppendLine($"Fine Description: {fine.FineDescription}");
+                content.AppendLine($"Date: {fine.Date}");
+                content.AppendLine($"Fine Amount: {fine.FineAmount}");
+                content.AppendLine($"Paid: {fine.Paid}");
+                content.AppendLine("------------------------------");
+            }
+
+            return content.ToString();
+        }
+
+        public static string GetCompanyContent()
+        {
+            // Отримання інформації про компанії та формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+
+            foreach (var company in CompanyDetails.GlobalCompanyDetails.companies)
+            {
+                content.AppendLine($"ID: {company.Id}");
+                content.AppendLine($"Company Name: {company.Company_Name}");
+                content.AppendLine($"IBAN: {company.IBAN}");
+                content.AppendLine($"Country: {company.Country}");
+                content.AppendLine($"Address: {company.Address}");
+                content.AppendLine($"Contact Person: {company.ContactPerson}");
+                content.AppendLine($"Phone: {company.Phone}");
+                content.AppendLine($"TIN: {company.TIN}");
+                content.AppendLine($"EDRPOU: {company.EDRPOU}");
+                content.AppendLine($"Account Balance: {company.AccountBalance}");
+                content.AppendLine("------------------------------");
+            }
+
+            return content.ToString();
+        }
+
+        public static string GetCharityContent()
+        {
+            // Отримання інформації про благодійні фонди та формування вмісту файлу
+            StringBuilder content = new StringBuilder();
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // Блок з виділеною датою
+            content.AppendLine("===================================");
+            content.AppendLine($"Date: {currentDate}");
+            content.AppendLine("===================================");
+
+            foreach (var charity in GlobalCharityFond.CharityFonds)
+            {
+                content.AppendLine($"ID: {charity.Id}");
+                content.AppendLine($"Fond Name: {charity.FondName}");
+                content.AppendLine($"Registration Number: {charity.RegistrationNumber}");
+                content.AppendLine($"Country: {charity.Country}");
+                content.AppendLine($"Address: {charity.Address}");
+                content.AppendLine($"Contact Person: {charity.ContactPerson}");
+                content.AppendLine($"Phone: {charity.Phone}");
+                content.AppendLine($"Email: {charity.Email}");
+                content.AppendLine($"Bank Account: {charity.BankAccount}");
+                content.AppendLine($"Account Balance: {charity.AccountBalance}");
+                content.AppendLine("------------------------------");
+            }
+
+            return content.ToString();
+        }
+        public static void WriteUsersDataToGoogleSheet()
+        {
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId; ;
+            var sheetName = "User";
+
+            foreach (var user in GlobalData.Users)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "ID", user.ID },
+            { "Card Number", user.CardNumber },
+            { "Full Name", user.FullName },
+            { "Password", user.Password },
+            { "Expiration Date", user.ExpirationDate },
+            { "Payment System", user.PaymentSystem },
+            { "Balance", user.Balance },
+            { "Address", user.Address },
+            { "Issue Date", user.IssueDate },
+            { "CVV/CVC", user.CVV_CVC },
+            { "Card Status", user.CardStatus },
+            { "Spending Limit", user.SpendingLimit },
+            { "Issuing Bank", user.IssuingBank },
+            { "Card Type", user.CardType }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+
+        public static void WriteUtilityBillsToGoogleSheet()
+        {
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId;
+            var sheetName = "Utility Bills";
+
+            foreach (var bill in GlobalUtility_Bills.utility_Bills)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "ID", bill.Id },
+            { "User Name", bill.User_Name },
+            { "Company Name", bill.Company_Name },
+            { "Amount", bill.Amount },
+            { "Address", bill.Address },
+            { "Paid", bill.Paid }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+    
+        public static void WriteTransactionsToGoogleSheet()
+        {
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId;
+            var sheetName = "Transactions";
+
+            foreach (var transaction in GlobalTransactionData.Transactions)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "Transaction ID", transaction.TransactionId },
+            { "User ID", transaction.UserId },
+            { "Transaction Type", transaction.TransactionType },
+            { "Amount", transaction.Amount },
+            { "Currency", transaction.Currency },
+            { "Timestamp", transaction.Timestamp },
+            { "Status", transaction.Status },
+            { "Source Account", transaction.SourceAccount },
+            { "Destination Account", transaction.DestinationAccount },
+            { "Description", transaction.Description }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+
+        public static void WriteFinesToGoogleSheet()
+        {
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId;
+            var sheetName = "Fines";
+
+            foreach (var fine in GlobalFines.Fines)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "ID", fine.Id },
+            { "License Plates", fine.LicensePlates },
+            { "Fine Description", fine.FineDescription },
+            { "Date", fine.Date },
+            { "Fine Amount", fine.FineAmount },
+            { "Paid", fine.Paid }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+
+        public static void WriteCompaniesToGoogleSheet()
+        {
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId;
+            var sheetName = "Companies";
+
+            foreach (var company in CompanyDetails.GlobalCompanyDetails.companies)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "ID", company.Id },
+            { "Company Name", company.Company_Name },
+            { "IBAN", company.IBAN },
+            { "Country", company.Country },
+            { "Address", company.Address },
+            { "Contact Person", company.ContactPerson },
+            { "Phone", company.Phone },
+            { "TIN", company.TIN },
+            { "EDRPOU", company.EDRPOU },
+            { "Account Balance", company.AccountBalance }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+
+        public static void WriteCharitiesToGoogleSheet()
+        {
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId;
+            var sheetName = "Charities";
+
+            foreach (var charity in GlobalCharityFond.CharityFonds)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "ID", charity.Id },
+            { "Fond Name", charity.FondName },
+            { "Registration Number", charity.RegistrationNumber },
+            { "Country", charity.Country },
+            { "Address", charity.Address },
+            { "Contact Person", charity.ContactPerson },
+            { "Phone", charity.Phone },
+            { "Email", charity.Email },
+            { "Bank Account", charity.BankAccount },
+            { "Account Balance", charity.AccountBalance }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+
+
+    }
+
+    //public class RSAEncryptor
+    //{
+    //    public static string EncryptData(string data)
+    //    {
+    //        // Завантажуємо публічний ключ
+    //        var publicKey = ATM_Supplement.RSAKeyManager.LoadPublicKey();
+    //        using (var rsa = RSA.Create())
+    //        {
+    //            rsa.ImportParameters(publicKey);
+    //            byte[] encryptedData = rsa.Encrypt(Encoding.UTF8.GetBytes(data), RSAEncryptionPadding.Pkcs1);
+    //            return Convert.ToBase64String(encryptedData);
+    //        }
+    //    }
+    //}
+
+    //public class RSADecryptor
+    //{
+    //    public static string DecryptData(string base64EncryptedData)
+    //    {
+    //        // Завантажуємо приватний ключ
+    //        var privateKey = RSAKeyManager.LoadPrivateKey();
+    //        using (var rsa = RSA.Create())
+    //        {
+    //            rsa.ImportParameters(privateKey);
+    //            byte[] encryptedData = Convert.FromBase64String(base64EncryptedData);
+    //            byte[] decryptedData = rsa.Decrypt(encryptedData, RSAEncryptionPadding.Pkcs1);
+    //            return Encoding.UTF8.GetString(decryptedData);
+    //        }
+    //    }
+    //}
+
 
 }

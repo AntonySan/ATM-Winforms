@@ -1,0 +1,14 @@
+===================================
+Date: 2024-05-23
+===================================
+ID: 1
+Fond Name: ikea
+Registration Number: 11111
+Country: Україна
+Address: десь там
+Contact Person: хтось
+Phone: +380684696856
+Email: example@gmail.com
+Bank Account: UA123456789012345678901234567890123456789012345678901234567890
+Account Balance: 14111,00
+------------------------------

@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace ATM_APP
 {
-    internal class Create_Ui_Element
+    public  class Create_Ui_Element
     {
-         Ui_Element ui_Element = new Ui_Element();
+          Ui_Element ui_Element = new Ui_Element();
 
         public Button[] CreateButton(short arraySize, Form form, string[] ButtonText, Point[] ButtonLocation, Size[] ButtonSize, EventHandler[] ButtonEvent)
         {
@@ -47,7 +47,7 @@ namespace ATM_APP
             return labels;
         }
 
-        public TextBox[] CreateTextBox(short arraySize, Form form,  Point[] TextBoxLocation, Size[] TextBoxSize)
+        public  TextBox[] CreateTextBox(short arraySize, Form form,  Point[] TextBoxLocation, Size[] TextBoxSize)
         {
             TextBox[] textBoxes  = new TextBox[arraySize];
 
@@ -64,6 +64,20 @@ namespace ATM_APP
             return textBoxes;
 
         }
-        
+
+        public ComboBox[] CreateComboBoxArray(short arraySize, Form form, Point[] comboBoxLocations, Size[] comboBoxSizes, string[][] comboBoxItems)
+        {
+            ComboBox[] comboBoxes = new ComboBox[arraySize];
+
+            for (short i = 0; i < comboBoxLocations.Length; i++)
+            {
+                comboBoxes[i] = ui_Element.CreateComboBox(comboBoxLocations[i], comboBoxSizes[i], comboBoxItems[i]);
+            }
+
+            form.Controls.AddRange(comboBoxes);
+            return comboBoxes;
+        }
+
+
     }
 }

@@ -1,0 +1,14 @@
+===================================
+Date: 2024-05-27
+===================================
+ID: 1
+Account Number: 40663
+Address: ikea
+Paid: 1
+Transfer Amount: 300
+Tariff Plan: 100mb
+Payment Date: 18.05.2024 10:02:40
+Service Status: Підтримується
+Data Usage: 10000
+User Name: Антон
+------------------------------

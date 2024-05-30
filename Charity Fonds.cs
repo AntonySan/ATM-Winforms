@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using ATM_CryptoGuardian;
+using System.Security.Cryptography;
 
 namespace ATM_Winforms
 {
@@ -45,5 +48,51 @@ namespace ATM_Winforms
         {
             CharityFonds.Clear();
         }
+
+        public static void GetAllCharityFond()
+        {
+            using (SqlConnection conn = new SqlConnection(Resource_Paths.DB_connectionString))
+            {
+                conn.Open();
+
+                // Завантаження приватного ключа для дешифрування
+                RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
+
+                string query = "SELECT * FROM CharityFond";
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int id = (int)reader["Id"];
+                        string fondName = DecryptField(reader["FondName"], privateKey);
+                        string registrationNumber = DecryptField(reader["RegistrationNumber"], privateKey);
+                        string country = DecryptField(reader["Country"], privateKey);
+                        string address = DecryptField(reader["Address"], privateKey);
+                        string contactPerson = DecryptField(reader["ContactPerson"], privateKey);
+                        string phone = DecryptField(reader["Phone"], privateKey);
+                        string email = DecryptField(reader["Email"], privateKey);
+                        string bankAccount = DecryptField(reader["BankAccount"], privateKey);
+                        decimal accountBalance = Convert.ToDecimal(DecryptField(reader["AccountBalance"], privateKey));
+
+                        CharityFond fond = new CharityFond(id, fondName, registrationNumber, country, address, contactPerson, phone, email, bankAccount, accountBalance);
+                        GlobalCharityFond.CharityFonds.Add(fond);
+                    }
+                }
+            }
+        }
+        private static string DecryptField(object encryptedField, RSAParameters privateKey)
+        {
+            if (encryptedField == null || encryptedField == DBNull.Value)
+            {
+                return null;
+            }
+
+            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
+            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
+            return Encoding.UTF8.GetString(decryptedData);
+        }
+
     }
 }

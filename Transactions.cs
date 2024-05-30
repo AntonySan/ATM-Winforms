@@ -1,6 +1,9 @@
-﻿using System;
+﻿using ATM_CryptoGuardian;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ATM_Winforms
 {
@@ -83,6 +86,56 @@ namespace ATM_Winforms
                 reader.Close();
             }
         }
+
+        public static void GetAllTransactions()
+        {
+            ClearTransactions();
+            using (SqlConnection conn = new SqlConnection(Resource_Paths.DB_connectionString))
+            {
+                conn.Open();
+
+                // Завантаження приватного ключа для дешифрування
+                RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
+
+                // Запит для вибору всіх транзакцій користувача
+                string query = "SELECT * FROM Transactions";
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int transactionId = (int)reader["transaction_id"];
+                    int uid = (int)reader["user_id"];
+                    string transactionType = DecryptField(reader["transaction_type"], privateKey);
+                    int amount = Convert.ToInt32(DecryptField(reader["amount"], privateKey));
+                    string currency = DecryptField(reader["currency"], privateKey);
+                    DateTime timestamp = (DateTime)reader["timestamp"];
+                    string status = DecryptField(reader["status"], privateKey);
+                    string sourceAccount = DecryptField(reader["source_account"], privateKey);
+                    string destinationAccount = DecryptField(reader["destination_account"], privateKey);
+                    string description = DecryptField(reader["description"], privateKey);
+
+                    Transaction transaction = new Transaction(transactionId, uid, transactionType, amount, currency, timestamp, status, sourceAccount, destinationAccount, description);
+                    Transactions.Add(transaction);
+                }
+
+                reader.Close();
+            }
+        }
+
+        private static string DecryptField(object encryptedField, RSAParameters privateKey)
+        {
+            if (encryptedField == null || encryptedField == DBNull.Value)
+            {
+                return null;
+            }
+
+            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
+            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
+            return Encoding.UTF8.GetString(decryptedData);
+        }
+
 
     }
 }

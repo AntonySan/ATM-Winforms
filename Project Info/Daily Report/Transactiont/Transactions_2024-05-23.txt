@@ -1,0 +1,102 @@
+===================================
+Date: 2024-05-23
+===================================
+Transaction ID: 34
+User ID: 17
+Transaction Type: Оплата штрафу: Перевищення встановленої межі швидкості руху транспортного засобу водієм у населеному пункті.
+Amount: 0
+Currency: UAH
+Timestamp: 03.05.2024 9:57:04
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 
+Description: 
+------------------------------
+Transaction ID: 35
+User ID: 17
+Transaction Type: Зняття готівки
+Amount: 100
+Currency: UAH
+Timestamp: 03.05.2024 9:57:36
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 
+Description: 
+------------------------------
+Transaction ID: 36
+User ID: 17
+Transaction Type: Внесення готівки
+Amount: 1000
+Currency: UAH
+Timestamp: 03.05.2024 9:57:53
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 
+Description: 
+------------------------------
+Transaction ID: 37
+User ID: 17
+Transaction Type: Оплата за інтернет
+Amount: 300
+Currency: UAH
+Timestamp: 03.05.2024 10:02:41
+Status: Успішно
+Source Account: Готівка
+Destination Account: 
+Description: 
+------------------------------
+Transaction ID: 38
+User ID: 17
+Transaction Type: Переказ на картку
+Amount: 1000
+Currency: UAH
+Timestamp: 03.05.2024 10:03:11
+Status: Успішно
+Source Account: Готівка
+Destination Account: 1000
+Description: 
+------------------------------
+Transaction ID: 39
+User ID: 17
+Transaction Type: Переказ за реквізитами
+Amount: 1000
+Currency: UAH
+Timestamp: 18.05.2024 10:05:42
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 1000
+Description: 
+------------------------------
+Transaction ID: 40
+User ID: 17
+Transaction Type: Переказ за реквізитами
+Amount: 1000
+Currency: UAH
+Timestamp: 18.05.2024 10:06:25
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 1000
+Description: 
+------------------------------
+Transaction ID: 41
+User ID: 17
+Transaction Type: Переказ в фонд ikea
+Amount: 1000
+Currency: UAH
+Timestamp: 18.05.2024 10:09:12
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 1000
+Description: 
+------------------------------
+Transaction ID: 42
+User ID: 17
+Transaction Type: Переказ в фонд ikea
+Amount: 1111
+Currency: UAH
+Timestamp: 18.05.2024 10:09:29
+Status: Успішно
+Source Account: 1111 2222 3333 4444
+Destination Account: 1111
+Description: 
+------------------------------

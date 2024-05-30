@@ -57,7 +57,7 @@ namespace ATM_Winforms
             });
         }
 
-        static void UploadFile(DriveService service, string filePath, string folderId)
+        public static void UploadFile(DriveService service, string filePath, string folderId)
         {
             // Отримання інформації про файли у вказаній папці з такою ж назвою
             var listRequest = service.Files.List();
@@ -92,7 +92,7 @@ namespace ATM_Winforms
             }
         }
 
-        static void CreateFileOnGoogleDrive(DriveService service, string fileName, string fileContent, string mimeType, string folderId)
+       public static void CreateFileOnGoogleDrive(DriveService service, string fileName, string fileContent, string mimeType, string folderId)
         {
             // Отримання інформації про файли у вказаній папці з такою ж назвою
             var listRequest = service.Files.List();

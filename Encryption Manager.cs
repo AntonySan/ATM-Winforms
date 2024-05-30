@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace ATM_Winforms
 {
-    internal class Encryption_Manager
+    public class Encryption_Manager
     {
 
         // Функція для зашифрування даних гібридним алгоритмом
@@ -107,7 +107,7 @@ namespace ATM_Winforms
         }
 
 
-        public void Example()
+        public static void Example()
         {
             // Генеруємо RSA ключі для обох сторін
             var rsaAlice = RSA.Create();
@@ -129,12 +129,12 @@ namespace ATM_Winforms
             // Приклад використання шифрування та розшифрування даних
             string originalData = "Hello, World!";
             byte[] encryptedData = EncryptData(Encoding.UTF8.GetBytes(originalData), alicePublicKey);
-            Console.WriteLine(Encoding.UTF8.GetString(encryptedData));
+            MessageBox.Show(Encoding.UTF8.GetString(encryptedData));
 
 
             // Розшифровуємо дані
             byte[] decryptedData = DecryptData(encryptedData, alicePrivateKey);
-            Console.WriteLine(Encoding.UTF8.GetString(decryptedData));
+            MessageBox.Show(Encoding.UTF8.GetString(decryptedData));
 
 
             // Виводимо публічний ключ Alice у форматі SubjectPublicKeyInfo
