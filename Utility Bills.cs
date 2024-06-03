@@ -10,19 +10,24 @@ using System.Security.Cryptography;
 
 namespace ATM_Winforms
 {
+    // *****************************************************************
+    //                          Клас Utility_Bills
+    // Описує рахунок за комунальні послуги
+    // *****************************************************************
     public class Utility_Bills
     {
-        public int Id {  get; set; }
+        // Властивості класу Utility_Bills
+        public int Id { get; set; }
         public string User_Name { get; set; }
         public string Company_Name { get; set; }
         public int Amount { get; set; }
-        public string Address {  get; set; }
-
+        public string Address { get; set; }
         public string Tarif { get; set; }
-        public string Used {  get; set; }
-        public string Paid {  get; set; }
+        public string Used { get; set; }
+        public string Paid { get; set; }
 
-        public Utility_Bills(int id,string user_name,string company_name, int amount,string address,string tarif, string used,string paid)
+        // Конструктор класу Utility_Bills
+        public Utility_Bills(int id, string user_name, string company_name, int amount, string address, string tarif, string used, string paid)
         {
             Id = id;
             User_Name = user_name;
@@ -32,20 +37,25 @@ namespace ATM_Winforms
             Tarif = tarif;
             Used = used;
             Paid = paid;
-
         }
     }
 
+    // *****************************************************************
+    //                    Клас GlobalUtility_Bills
+    // Управляє глобальним списком рахунків за комунальні послуги
+    // *****************************************************************
     public class GlobalUtility_Bills
     {
+        // Глобальний список рахунків за комунальні послуги
         public static List<Utility_Bills> utility_Bills { get; } = new List<Utility_Bills>();
 
+        // Метод для очищення списку рахунків
         public static void ClearUtility_Bills()
         {
             utility_Bills.Clear();
         }
 
-
+        // Метод для отримання всіх рахунків користувачів з бази даних
         public static void GetAllUserBills()
         {
             string connectionString = Resource_Paths.DB_connectionString; // Замініть на ваш рядок підключення
@@ -55,30 +65,25 @@ namespace ATM_Winforms
                 connection.Open();
 
                 string query = @"
-        SELECT uc.Id, cr.Cardholder_Name, uc.Compani_name, uc.Amount, uc.Address, uc.tariff, uc.used, uc.paid
-        FROM Utility_Сompanies uc
-        LEFT JOIN CardRegistry cr ON uc.Address = cr.[Cardholder's_Address:]";
+SELECT uc.Id, cr.Cardholder_Name, uc.Compani_name, uc.Amount, uc.Address, uc.tariff, uc.used, uc.paid
+FROM Utility_Сompanies uc
+LEFT JOIN CardRegistry cr ON uc.Address = cr.[Cardholder's_Address:]";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    // Завантаження приватного ключа для дешифрування
-                    RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
-
                     while (reader.Read())
                     {
                         // Отримання даних з результатів запиту
-                        int id = (int)reader["Id"];
-
-                        // Дешифрування полів
-                        string userFullName = DecryptField(reader["Cardholder_Name"], privateKey);
-                        string address = DecryptField(reader["Address"], privateKey);
-                        string companyName = DecryptField(reader["Compani_name"], privateKey);
-                        int amountToPay = Convert.ToInt32(DecryptField(reader["Amount"], privateKey));
-                        string tariff = DecryptField(reader["tariff"], privateKey);
-                        string used = DecryptField(reader["used"], privateKey);
-                        string isPaid = DecryptField(reader["paid"], privateKey);
+                        int id = reader.IsDBNull(reader.GetOrdinal("Id")) ? 0 : (int)reader["Id"];
+                        string userFullName = reader.IsDBNull(reader.GetOrdinal("Cardholder_Name")) ? string.Empty : (string)reader["Cardholder_Name"];
+                        string address = reader.IsDBNull(reader.GetOrdinal("Address")) ? string.Empty : (string)reader["Address"];
+                        string companyName = reader.IsDBNull(reader.GetOrdinal("Compani_name")) ? string.Empty : (string)reader["Compani_name"];
+                        int amountToPay = reader.IsDBNull(reader.GetOrdinal("Amount")) ? 0 : (int)reader["Amount"];
+                        string tariff = reader.IsDBNull(reader.GetOrdinal("tariff")) ? string.Empty : (string)reader["tariff"];
+                        string used = reader.IsDBNull(reader.GetOrdinal("used")) ? string.Empty : (string)reader["used"];
+                        string isPaid = reader.IsDBNull(reader.GetOrdinal("paid")) ? string.Empty : (string)reader["paid"];
 
                         // Створення об'єкту з отриманих даних і додавання його до списку
                         Utility_Bills userData = new Utility_Bills(id, userFullName, companyName, amountToPay, address, tariff, used, isPaid);
@@ -88,17 +93,9 @@ namespace ATM_Winforms
             }
         }
 
-        // Метод для дешифрування окремих полів
-        private static string DecryptField(object encryptedField, RSAParameters privateKey)
-        {
-            if (encryptedField == null || encryptedField == DBNull.Value)
-            {
-                return null;
-            }
 
-            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
-            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
-            return Encoding.UTF8.GetString(decryptedData);
-        }
+
+
+
     }
 }

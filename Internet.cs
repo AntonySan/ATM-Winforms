@@ -55,9 +55,6 @@ namespace ATM_Winforms
             {
                 connection.Open();
 
-                // Завантаження приватного ключа для дешифрування
-                RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
-
                 string query = "SELECT * FROM Internet";
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -66,34 +63,23 @@ namespace ATM_Winforms
                     while (reader.Read())
                     {
                         int id = (int)reader["Id"];
-                        string accNumber = DecryptField(reader["Account_number"], privateKey);
-                        string address = DecryptField(reader["Address"], privateKey);
-                        int paid = Convert.ToInt32(DecryptField(reader["Paid"], privateKey));
-                        int transferAmount = Convert.ToInt32(DecryptField(reader["Transfer_Amount"], privateKey));
-                        string tariffPlan = DecryptField(reader["Tariff_Plan"], privateKey);
-                        string paymentDate = DecryptField(reader["Payment_Date"], privateKey);
-                        string serviceStatus = DecryptField(reader["Service_Status"], privateKey);
-                        string dataUsage = DecryptField(reader["Data_Usage"], privateKey);
-                        string userName = DecryptField(reader["User_Name"], privateKey);
+                        string accNumber = (string)reader["Account_number"];
+                        string address = (string)reader["Address"];
+                        int paid = (int)reader["Paid"];
+                        int transferAmount = (int)reader["Transfer_Amount"];
+                        string tariffPlan = (string)reader["Tariff_Plan"];
+                        string paymentDate = (string)reader["Payment_Date"];
+                        string serviceStatus = (string)reader["Service_Status"];
+                        string dataUsage = (string)reader["Data_Usage"];
+                        string userName = (string)reader["User_Name"];
 
-                        // Створюємо об'єкт інтернет-послуги та додаємо його до списку
                         Internet internetData = new Internet(id, accNumber, address, paid, transferAmount, tariffPlan, paymentDate, serviceStatus, dataUsage, userName);
                         GlobalInternetData.internet.Add(internetData);
                     }
                 }
             }
         }
-        private static string DecryptField(object encryptedField, RSAParameters privateKey)
-        {
-            if (encryptedField == null || encryptedField == DBNull.Value)
-            {
-                return null;
-            }
 
-            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
-            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
-            return Encoding.UTF8.GetString(decryptedData);
-        }
 
     }
 }

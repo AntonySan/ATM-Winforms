@@ -55,9 +55,6 @@ namespace ATM_Winforms
             {
                 conn.Open();
 
-                // Завантаження приватного ключа для дешифрування
-                RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
-
                 string query = "SELECT * FROM CharityFond";
                 SqlCommand cmd = new SqlCommand(query, conn);
 
@@ -66,15 +63,15 @@ namespace ATM_Winforms
                     while (reader.Read())
                     {
                         int id = (int)reader["Id"];
-                        string fondName = DecryptField(reader["FondName"], privateKey);
-                        string registrationNumber = DecryptField(reader["RegistrationNumber"], privateKey);
-                        string country = DecryptField(reader["Country"], privateKey);
-                        string address = DecryptField(reader["Address"], privateKey);
-                        string contactPerson = DecryptField(reader["ContactPerson"], privateKey);
-                        string phone = DecryptField(reader["Phone"], privateKey);
-                        string email = DecryptField(reader["Email"], privateKey);
-                        string bankAccount = DecryptField(reader["BankAccount"], privateKey);
-                        decimal accountBalance = Convert.ToDecimal(DecryptField(reader["AccountBalance"], privateKey));
+                        string fondName = (string)reader["FondName"];
+                        string registrationNumber = (string)reader["RegistrationNumber"];
+                        string country = (string)reader["Country"];
+                        string address = (string)reader["Address"];
+                        string contactPerson = (string)reader["ContactPerson"];
+                        string phone = (string)reader["Phone"];
+                        string email = (string)reader["Email"];
+                        string bankAccount = (string)reader["BankAccount"];
+                        decimal accountBalance = (decimal)reader["AccountBalance"];
 
                         CharityFond fond = new CharityFond(id, fondName, registrationNumber, country, address, contactPerson, phone, email, bankAccount, accountBalance);
                         GlobalCharityFond.CharityFonds.Add(fond);
@@ -82,17 +79,8 @@ namespace ATM_Winforms
                 }
             }
         }
-        private static string DecryptField(object encryptedField, RSAParameters privateKey)
-        {
-            if (encryptedField == null || encryptedField == DBNull.Value)
-            {
-                return null;
-            }
 
-            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
-            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
-            return Encoding.UTF8.GetString(decryptedData);
-        }
+       
 
     }
 }

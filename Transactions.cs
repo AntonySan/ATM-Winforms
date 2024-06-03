@@ -94,9 +94,6 @@ namespace ATM_Winforms
             {
                 conn.Open();
 
-                // Завантаження приватного ключа для дешифрування
-                RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
-
                 // Запит для вибору всіх транзакцій користувача
                 string query = "SELECT * FROM Transactions";
                 SqlCommand cmd = new SqlCommand(query, conn);
@@ -105,16 +102,16 @@ namespace ATM_Winforms
 
                 while (reader.Read())
                 {
-                    int transactionId = (int)reader["transaction_id"];
-                    int uid = (int)reader["user_id"];
-                    string transactionType = DecryptField(reader["transaction_type"], privateKey);
-                    int amount = Convert.ToInt32(DecryptField(reader["amount"], privateKey));
-                    string currency = DecryptField(reader["currency"], privateKey);
-                    DateTime timestamp = (DateTime)reader["timestamp"];
-                    string status = DecryptField(reader["status"], privateKey);
-                    string sourceAccount = DecryptField(reader["source_account"], privateKey);
-                    string destinationAccount = DecryptField(reader["destination_account"], privateKey);
-                    string description = DecryptField(reader["description"], privateKey);
+                    int transactionId = reader["transaction_id"] != DBNull.Value ? (int)reader["transaction_id"] : 0;
+                    int uid = reader["user_id"] != DBNull.Value ? (int)reader["user_id"] : 0;
+                    string transactionType = reader["transaction_type"] != DBNull.Value ? (string)reader["transaction_type"] : string.Empty;
+                    int amount = reader["amount"] != DBNull.Value ? (int)reader["amount"] : 0;
+                    string currency = reader["currency"] != DBNull.Value ? (string)reader["currency"] : string.Empty;
+                    DateTime timestamp = reader["timestamp"] != DBNull.Value ? (DateTime)reader["timestamp"] : DateTime.MinValue;
+                    string status = reader["status"] != DBNull.Value ? (string)reader["status"] : string.Empty;
+                    string sourceAccount = reader["source_account"] != DBNull.Value ? (string)reader["source_account"] : string.Empty;
+                    string destinationAccount = reader["destination_account"] != DBNull.Value ? (string)reader["destination_account"] : string.Empty;
+                    string description = reader["description"] != DBNull.Value ? (string)reader["description"] : string.Empty;
 
                     Transaction transaction = new Transaction(transactionId, uid, transactionType, amount, currency, timestamp, status, sourceAccount, destinationAccount, description);
                     Transactions.Add(transaction);
@@ -124,17 +121,8 @@ namespace ATM_Winforms
             }
         }
 
-        private static string DecryptField(object encryptedField, RSAParameters privateKey)
-        {
-            if (encryptedField == null || encryptedField == DBNull.Value)
-            {
-                return null;
-            }
 
-            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
-            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
-            return Encoding.UTF8.GetString(decryptedData);
-        }
+
 
 
     }

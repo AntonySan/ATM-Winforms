@@ -56,9 +56,6 @@ namespace ATM_Winforms
                 {
                     conn.Open();
 
-                    // Завантаження приватного ключа для дешифрування
-                    RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
-
                     string query = "SELECT * FROM CompanyDetails";
                     SqlCommand cmd = new SqlCommand(query, conn);
 
@@ -67,34 +64,23 @@ namespace ATM_Winforms
                         while (reader.Read())
                         {
                             int id = (int)reader["Id"];
-                            string companyName = DecryptField(reader["CompanyName"], privateKey);
-                            string IBAN = DecryptField(reader["IBAN"], privateKey);
-                            string country = DecryptField(reader["Country"], privateKey);
-                            string address = DecryptField(reader["Address"], privateKey);
-                            string contactPerson = DecryptField(reader["ContactPerson"], privateKey);
-                            string phone = DecryptField(reader["Phone"], privateKey);
-                            string tin = DecryptField(reader["TIN"], privateKey);
-                            string edrpou = DecryptField(reader["EDRPOU"], privateKey);
-                            int accountBalance = Convert.ToInt32(DecryptField(reader["AccountBalance"], privateKey));
+                            string companyName = (string)reader["CompanyName"];
+                            string IBAN = (string)reader["IBAN"];
+                            string country = (string)reader["Country"];
+                            string address = (string)reader["Address"];
+                            string contactPerson = (string)reader["ContactPerson"];
+                            string phone = (string)reader["Phone"];
+                            string tin = (string)reader["TIN"];
+                            string edrpou = (string)reader["EDRPOU"];
+                            int accountBalance = (int)reader["AccountBalance"];
 
-                            // Створення нового об'єкта CompanyDetails з використанням конструктора з параметрами
                             CompanyDetails company = new CompanyDetails(id, companyName, IBAN, country, address, contactPerson, phone, tin, edrpou, accountBalance);
                             GlobalCompanyDetails.companies.Add(company);
                         }
                     }
                 }
             }
-            private static string DecryptField(object encryptedField, RSAParameters privateKey)
-            {
-                if (encryptedField == null || encryptedField == DBNull.Value)
-                {
-                    return null;
-                }
 
-                byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
-                byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
-                return Encoding.UTF8.GetString(decryptedData);
-            }
 
         }
     }

@@ -25,7 +25,7 @@ namespace ATM_APP
                 try
                 {
                     conn.Open();
-                    MessageBox.Show("Connected to the database");
+                   
                 }
                 catch (Exception ex)
                 {
@@ -348,7 +348,7 @@ namespace ATM_APP
        
         public static async Task InsertTransaction(string connectionString, int userId, string transactionType, decimal amount, string currency, DateTime timestamp, string status, string? sourceAccountId, string? destinationAccountId, string description)
         {
-            MessageBox.Show("22222222");
+         
             string query = @"INSERT INTO Transactions 
                      ([user_id], [transaction_type], [amount], [currency], [timestamp], [status], [source_account], [destination_account], [description])
                      VALUES
@@ -373,7 +373,7 @@ namespace ATM_APP
                     {
                         connection.Open();
                         int rowsAffected = command.ExecuteNonQuery();
-                        MessageBox.Show("Дані успішно додані до таблиці Transactions.");
+                     
                     }
                     catch (SqlException ex)
                     {

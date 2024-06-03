@@ -1,0 +1,33 @@
+===================================
+Date: 2024-06-03
+===================================
+ID: 39
+Card Number: 1111 2222 3333 4444
+Full Name: Іванова Аура Іванівна
+Password: $2a$10$K777kRlFwPS9QPJNaSZsRumpfwLpWVzOeZPpyT98A8s1jqdDJMgTu
+Expiration Date: 12/25
+Payment System: Visa
+Balance: 6000
+Address: ikea
+Issue Date: 10.04.2029
+CVV/CVC: $2a$10$AjMeIKVLkanth.PvVIG5L.r0C7pcBcC5FvjeJB/Sz5aPLX2Vpg3Qe
+Card Status: Active
+Spending Limit: 50000
+Issuing Bank: Aura
+Card Type: Debit
+------------------------------
+ID: 41
+Card Number: 4731 2178 3549 2461
+Full Name: Шинкаренко Валентина Сергіївна
+Password: $2a$10$o0WATJa9DOc6w3Dh1HIRBODBhHzDLaZ1GC9XkU1rN1PtnKYR77neC
+Expiration Date: 09/2025
+Payment System: Visa
+Balance: 496
+Address: Івано-Франківська область, місто Івано-Франківськ, вул. Пирогова, 47, буд. 23, кв. 6
+Issue Date: 28.11.2022
+CVV/CVC: $2a$10$dplSeg.e1Ewsxb..q08kLevy2bbG5ZeDgGeYL8DJIbnwa5prHH8Uq
+Card Status: Active
+Spending Limit: 50000
+Issuing Bank: Aura
+Card Type: Debit
+------------------------------

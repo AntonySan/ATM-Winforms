@@ -1,0 +1,25 @@
+===================================
+Date: 2024-06-03
+===================================
+ID: 1
+Fond Name: ikea
+Registration Number: 11111
+Country: Україна
+Address: десь там
+Contact Person: хтось
+Phone: +380684696856
+Email: example@gmail.com
+Bank Account: UA123456789012345678901234567890123456789012345678901234567890
+Account Balance: 14111,00
+------------------------------
+ID: 3
+Fond Name: БФ "БлагоДія"
+Registration Number: 94275
+Country: Україна
+Address: Тернопільська область, місто Тернопіль, просп. Урицького, 24
+Contact Person: Миколаєнко Катерина Михайлівна
+Phone: +380667895939
+Email: blagoDiya@gmail.com
+Bank Account: UA455971225161968524898562216
+Account Balance: 1000000,00
+------------------------------

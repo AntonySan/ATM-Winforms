@@ -21,6 +21,7 @@ using Google.Apis.Sheets.v4.Data;
 using Color = System.Drawing.Color;
 using System.Security.Cryptography;
 using ATM_CryptoGuardian;
+using System.Media;
 
 
 namespace ATM_APP
@@ -39,6 +40,7 @@ namespace ATM_APP
             StartPosition = FormStartPosition.CenterScreen;
             this.BackgroundImage = new System.Drawing.Bitmap(backgroundImagePath);
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Icon = new System.Drawing.Icon(Resource_Paths.Logo_imagine) ;
             AddTimeAndExitLabels();
         }
         private void AddTimeAndExitLabels()
@@ -96,16 +98,14 @@ namespace ATM_APP
 
         File_Creator fileCreator = new File_Creator();
 
-     public InsertCardForm() : base("InsertCard", Resource_Paths.InsertCardForm)
+     public InsertCardForm() : base("Вставте картку", Resource_Paths.InsertCardForm)
         {
-            //EncryptData();
-        
             InitializeComponent();
-         //  TimedDailyReport();
-           // TimedMonthlyReport();
-            
+        TimedDailyReport();
+         TimedMonthlyReport();
 
-     }
+
+        }
 
      private void TimedDailyReport()
         {
@@ -147,6 +147,7 @@ namespace ATM_APP
         {
             // Ініціалізація таймера
             System.Timers.Timer timer = new System.Timers.Timer();
+            const double maxInterval = int.MaxValue - 1; // Максимальний інтервал, який підтримується таймером
 
             // Метод для обчислення інтервалу до наступного першого числа місяця о 00:00
             double CalculateIntervalToNextMonth()
@@ -156,12 +157,38 @@ namespace ATM_APP
                 return (nextFirstOfMonth - now).TotalMilliseconds;
             }
 
-            // Встановлення початкового інтервалу таймера
-            timer.Interval = CalculateIntervalToNextMonth();
+            // Метод для встановлення інтервалу з підтримкою великих значень
+            void SetLargeInterval(double interval)
+            {
+                if (interval <= maxInterval)
+                {
+                    timer.Interval = interval;
+                    timer.Start(); // Запуск або перезапуск таймера
+                }
+                else
+                {
+                    timer.Interval = maxInterval;
+                    timer.Elapsed += HandleLargeInterval; // Додаємо обробник для великих інтервалів
+                    timer.Start(); // Запуск або перезапуск таймера
+                }
+            }
 
-            // Додавання обробника події
+            // Обробник подій для великих інтервалів
+            void HandleLargeInterval(object sender, System.Timers.ElapsedEventArgs e)
+            {
+                timer.Stop();
+                timer.Elapsed -= HandleLargeInterval; // Відписуємось від цього обробника
+
+                double remainingInterval = CalculateIntervalToNextMonth() - maxInterval;
+                SetLargeInterval(remainingInterval);
+            }
+
+            // Додавання обробника події для щомісячного звіту
             timer.Elapsed += (sender, e) =>
             {
+                // Зупинка таймера під час виконання звіту
+                timer.Stop();
+
                 // Виконання необхідного коду
                 GlobalData.GetAllUser();
                 GlobalFines.GetAllFines();
@@ -172,19 +199,16 @@ namespace ATM_APP
                 GlobalCharityFond.GetAllCharityFond();
                 reportManager.GenerateAndUploadReports();
                 ClearAllData();
-                // Повторне встановлення інтервалу таймера до наступного першого числа місяця
-                timer.Interval = CalculateIntervalToNextMonth();
+
+                // Встановлення інтервалу таймера до наступного першого числа місяця
+                double nextInterval = CalculateIntervalToNextMonth();
+                SetLargeInterval(nextInterval);
             };
 
-            // Запуск таймера
-            timer.Start();
-
-            Console.WriteLine("Додаток запущено. Натисніть Enter для завершення.");
-            Console.ReadLine();
+            // Встановлення початкового інтервалу таймера
+            double initialInterval = CalculateIntervalToNextMonth();
+            SetLargeInterval(initialInterval);
         }
-        
-        
-
 
         private void ClearAllData()
         {
@@ -254,8 +278,9 @@ namespace ATM_APP
         private Label[] labels;
         private  TextBox[] textBoxes;
         private static TextBox NumberCard_Tbx, Pin_Tbx;
+        private User user;
 
-        public Log_In() : base("Log In", Resource_Paths.LoginForm)
+        public Log_In() : base("Авторизація", Resource_Paths.LoginForm)
         {
             InitializeComponent();
             AddTextBox();
@@ -265,14 +290,14 @@ namespace ATM_APP
         private void InitializeComponent()
         {
             this.ClientSize = new Size(828, 599);
-            Name = "Log_In";
+           
             StartPosition = FormStartPosition.CenterScreen;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
         }
 
         private void AddButtons()
         {
-            string[] ButtonText = { "Exit" };
+            string[] ButtonText = { "УВІЙТИ" };
 
             Point[] ButtonLocation = { new Point(262, 457) };
 
@@ -284,8 +309,6 @@ namespace ATM_APP
 
 
         }
-
-
 
         private void AddTextBox()
         {
@@ -301,7 +324,6 @@ namespace ATM_APP
             Pin_Tbx.TextChanged += Pin_Tbx_TextChanged;
         
         }
-        
         public static void NumberCard_Tbx_TextChanged(object sender, EventArgs e)
         {
             // Отримуємо текст з текстового поля
@@ -368,7 +390,7 @@ namespace ATM_APP
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@NumberCard", NumberCard_Tbx.Text);
-                    string storedHash = (string)command.ExecuteScalar();
+                     string storedHash = (string)command.ExecuteScalar();
 
                     if (storedHash != null && Hashing_Service.BCryptVerifyPassword(Pin_Tbx.Text, storedHash))
                     {
@@ -389,7 +411,7 @@ namespace ATM_APP
         public static void GetUserByCardNumberAndPassword()
         {
            
-            RSAParameters alicePrivateKey = RSAKeyManager.LoadPrivateKey();
+      
 
             using (SqlConnection conn = new SqlConnection(Resource_Paths.DB_connectionString))
             {
@@ -443,7 +465,7 @@ namespace ATM_APP
         static Update_DB update_DB = new Update_DB();
         ExchangeRates exchangeRate = new ExchangeRates();
 
-        public Main_Menu() : base("Main Menu", Resource_Paths.MainForm)
+        public Main_Menu() : base("Головне меню", Resource_Paths.MainForm)
         {
             GetExchangeRates(Resource_Paths.DB_connectionString, "EUR", "USD");
             AddButtons();
@@ -505,7 +527,7 @@ namespace ATM_APP
                 FullNameLabel.Font = ExpirationDateLabel.Font = new Font("SEGUE UI", 12);
                 CardNumberLabel.Font = new Font("SEGUE UI", 18, FontStyle.Regular);
                 PaymentSystemLabel.Font = new Font("SEGUE UI", 12, FontStyle.Italic);
-                MessageBox.Show(user.FullName);
+             
             }
         }
         private void AddExchangeRateLabels()
@@ -526,8 +548,7 @@ namespace ATM_APP
                     // Створюємо мітки для кожного об'єкту
                     Label[] labels = create_ui_element.CreateLabel(2, this, LabelText, LabelLocation);
 
-                    // Показуємо значення purchaseRate для поточного об'єкту
-                    MessageBox.Show(exchangeRate.PurchaseRate);
+                 
                 }
             }
         }
@@ -678,7 +699,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "ЗНЯТИ ГОТІВКУ"
             };
 
             Point[] ButtonLocation =
@@ -709,7 +730,9 @@ namespace ATM_APP
 
             labels = create_ui_element.CreateLabel(1, this, LabelText, Labellocation);
             CardBalance = labels[0];
-           
+            CardBalance.Font = new Font("Segue UI", 32);
+            CardBalance.ForeColor  = Color.White;
+
         }
         private void AddTextBox()
         {
@@ -729,14 +752,15 @@ namespace ATM_APP
             textBoxes = create_ui_element.CreateTextBox(2, this, TextBoxlocation, TextBoxsize);
             WithdrawAmount_Tbx = textBoxes[0];
             Pin_Tbx = textBoxes[1];
-            WithdrawAmount_Tbx.Font = Pin_Tbx.Font = new Font("Segue UI", 16);
+            WithdrawAmount_Tbx.Font = Pin_Tbx.Font = new Font("Segue UI", 17);
 
         }
         private async void ExitButton_Click(object sender, EventArgs e)
         {
             int user_Balance = int.Parse(user.Balance);
             int user_WithdrawAmount = int.Parse(WithdrawAmount_Tbx.Text);
-            if (Pin_Tbx.Text == user.Password && user_Balance >= user_WithdrawAmount)
+            
+            if (Hashing_Service.BCryptVerifyPassword(Pin_Tbx.Text, user.Password) && user_Balance >= user_WithdrawAmount)
             {
                 user_Balance = user_Balance - user_WithdrawAmount;
                 user.Balance = Convert.ToString(user_Balance);
@@ -749,8 +773,8 @@ namespace ATM_APP
 
                await DatabaseManager.InsertTransaction(Resource_Paths.DB_connectionString, user.ID, "Зняття готівки",
                     user_WithdrawAmount, "UAH", DateTime.Now, "Успішно",user.CardNumber, null, "");
-                //тут треба анімація видання коштів 
-                MessageBox.Show("Ви успішно зняли готівку");
+
+                await PlaySound();
 
                 WithdrawMoney_Btn.Enabled = false; 
             }
@@ -762,6 +786,12 @@ namespace ATM_APP
             }
         }
 
+        private async Task PlaySound()
+        {
+            SoundPlayer player = new SoundPlayer(Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Prodject Sound", "bankomat-vydacha-2-_1_.wav"));
+            player.Play();
+            MessageBox.Show("Ви успішно зняли готівку");
+        }
        private void UpdateUserBalance(string cardNumber, string amount)
         {
             using (SqlConnection conn = new SqlConnection(Resource_Paths.DB_connectionString))
@@ -797,6 +827,7 @@ namespace ATM_APP
         {
             GlobalData.ClearUsers();
             Log_In.GetUserByCardNumberAndPassword();
+            
             user = GlobalData.Users[0];
 
         }
@@ -828,7 +859,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "ПОПОВНИТИ КАРТКУ"
             };
 
             Point[] ButtonLocation =
@@ -1033,7 +1064,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "ПРОДОВЖИТИ"
             };
 
             Point[] ButtonLocation =
@@ -1052,30 +1083,32 @@ namespace ATM_APP
             };
 
             buttons = create_ui_element.CreateButton(1, this, ButtonText, ButtonLocation, ButtonSize, ButtonEvent);
+            
 
 
         }
-
-        
         private void AddTextBox()
         {
             Point[] TextBoxlocation =
             {
-             new Point(295, 253),
+             new Point(275, 253),
               };
     
             Size[] TextBoxsize =
             {
-                 new Size(245, 64),
+                 new Size(345, 64),
              };
 
             textBoxes = create_ui_element.CreateTextBox(1, this, TextBoxlocation, TextBoxsize);
             licencePlate = textBoxes[0];
             licencePlate.BackColor = Color.FromArgb(224, 219, 219);
+            licencePlate.Font = new Font("Segue UI", 40);
+            licencePlate.ForeColor = Color.White;
+
+
             licencePlate.TextChanged += TextBox_TextChanged; // Додати обробник події TextChanged
             
         }
-
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -1109,7 +1142,6 @@ namespace ATM_APP
                 textBox.SelectionStart = textBox.Text.Length; // Встановити позицію курсора в кінець тексту
             }
         }
-
        public static void ReadFinesData()
         {
             using (SqlConnection connection = new SqlConnection(Resource_Paths.DB_connectionString))
@@ -1142,15 +1174,13 @@ namespace ATM_APP
                 reader.Close();
             }
         }
-
-
         private void ExitButton_Click(object sender, EventArgs e)
         {
             ReadFinesData();
            
             if (GlobalFines.Fines.Count>=1)
             {
-                MessageBox.Show(GlobalFines.Fines.Count.ToString());
+                
                 FinesForm2 FinesForm = new FinesForm2();
                 FinesForm.FormClosed += (s, args) => this.Close(); // Додати обробник події FormClosed
 
@@ -1187,7 +1217,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "СПЛАТИТИ"
             };
 
             Point[] ButtonLocation =
@@ -1371,7 +1401,7 @@ namespace ATM_APP
        
         private async Task DepositMoneyAnimationAsync()
         {
-            MessageBox.Show("Animation");
+          
             int[] amounts = { 500, 200, 100, 50, 20, 10 }; // змінено порядок сум для того, щоб спочатку намагатися віднімати більші суми
             int targetAmount = int.Parse(totalAmount.ToString());
 
@@ -1451,7 +1481,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "СПЛАТИТИ"
             };
 
             Point[] ButtonLocation =
@@ -1509,7 +1539,7 @@ namespace ATM_APP
                                       // Очистити панель від усіх елементів
             ReloadUtilityBillsInfo();
             panel.Controls.Clear();
-            MessageBox.Show(GlobalUtility_Bills.utility_Bills.Count.ToString());
+
             if (GlobalUtility_Bills.utility_Bills.Count > 0)
             {
                 foreach (var bills in GlobalUtility_Bills.utility_Bills)
@@ -1618,7 +1648,7 @@ namespace ATM_APP
 
         private async Task DepositMoneyAnimationAsync()
         {
-            MessageBox.Show("Animation");
+        
             int[] amounts = { 500, 200, 100, 50, 20, 10 }; // змінено порядок сум для того, щоб спочатку намагатися віднімати більші суми
             int targetAmount = int.Parse(totalAmount.ToString());
 
@@ -1683,7 +1713,7 @@ namespace ATM_APP
                         // Створення об'єкту з отриманих даних і додавання його до списку
                         Utility_Bills userData = new Utility_Bills(id, userFullName,companyName, amountToPay, address, tariff, used, is_paid);
                         GlobalUtility_Bills.utility_Bills.Add(userData);
-                        MessageBox.Show(address);
+                      
                     }
                     
                 }
@@ -1748,7 +1778,7 @@ namespace ATM_APP
         private Button payInternet_Btn;
         private Label[] labels;
         private TextBox[] textBoxes;
-        private static TextBox accountNumber_Tbx, address_Tbx, transferAmount_Tbx;
+        private TextBox accountNumber_Tbx, address_Tbx, transferAmount_Tbx ;
         private Label FundsСontributed_Lab , paidAmount_Label;
         private static Internet internet = GlobalInternetData.internet[0];
         private User user = GlobalData.Users[0];
@@ -1767,7 +1797,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "СПЛАТИТИ"
             };
 
             Point[] ButtonLocation =
@@ -1936,7 +1966,7 @@ namespace ATM_APP
             buttons[0].Enabled = false;
             }
         }
-        public static void GetInternetDataByAddressAndAccountNumber()
+        public void GetInternetDataByAddressAndAccountNumber()
         {
             GlobalInternetData.ClearInternet(); // Очищаємо список, щоб заповнити його новими даними
 
@@ -1947,7 +1977,8 @@ namespace ATM_APP
                 string query = @"SELECT * FROM Internet WHERE Address = @Address AND Account_number = @AccountNumber AND Paid = 0";
 
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Address", address_Tbx.Text);
+              
+               command.Parameters.AddWithValue("@Address",address_Tbx.Text);
                 command.Parameters.AddWithValue("@AccountNumber", accountNumber_Tbx.Text);
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -2035,7 +2066,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "ПЕРЕКАЗАТИ"
             };
 
             Point[] ButtonLocation =
@@ -2100,7 +2131,7 @@ namespace ATM_APP
         {
             // Отримання тексту з текстових полів
 
-            MessageBox.Show(UserCard_Tbx.Text);
+            
             DatabaseManager.LoadCardRegistriesFromDatabase(UserCard_Tbx.Text);
 
             // Оновлення тексту мітки в залежності від вмісту текстових полів
@@ -2347,7 +2378,7 @@ namespace ATM_APP
         {
             string[] ButtonText =
             {
-                "Exit"
+                "ПЕРЕКАЗАТИ"
             };
 
             Point[] ButtonLocation =
@@ -2372,7 +2403,7 @@ namespace ATM_APP
 
         private void AddLabel()
         {
-            string[] LabelText = { "0$", "0$" };
+            string[] LabelText = { "0₴", "0₴" };
 
             Point[] Labellocation = { new Point(260, 414), new Point(510, 414) };
 
@@ -2584,7 +2615,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", IBAN_Tb
         {
             string[] ButtonText =
             {
-                "Exit"
+                "ПЕРЕКАЗАТИ"
             };
 
             Point[] ButtonLocation =
@@ -2609,7 +2640,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", IBAN_Tb
 
         private void AddLabel()
         {
-            string[] LabelText = { "0$", "0$" };
+            string[] LabelText = { "0₴", "0₴" };
 
             Point[] Labellocation = { new Point(260, 414), new Point(510, 414) };
 
@@ -2934,7 +2965,6 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
 
     }
 
-
     public  class ReportManager
     {
         private File_Creator fileCreator;
@@ -2957,6 +2987,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
             WriteFinesToGoogleSheet();
             WriteCompaniesToGoogleSheet();
             WriteCharitiesToGoogleSheet();
+            WriteInternetBillsToGoogleSheet();
             Google_Sheets_Manager.DownloadFile(driveService, Google_Sheets_Manager.SpreadsheetId, Resource_Paths.DataBase_XLSX);
             if (fileCreator.SSD_serialNumber != null && fileCreator.IsSSDSerialNumberValid(fileCreator.SSD_serialNumber))
             {
@@ -3085,12 +3116,6 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
         }
 
 
-        private void GoogleSheetSend()
-        {
-            // Підготовка даних для Google Sheets
-            
-
-        }
         private async void UploadFileToGoogleDrive(DriveService service, string filePath, string folderId)
         {
             if (File.Exists(filePath))
@@ -3459,39 +3484,36 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
             }
         }
 
+        public static void WriteInternetBillsToGoogleSheet()
+        {
+            // Отримуємо сервіс Google Sheets
+            var sheetsService = Google_Sheets_Manager.GetSheetsService(Google_Sheets_Manager.GetCredential(Resource_Paths.JsonFilePath));
+            var spreadsheetId = Google_Sheets_Manager.SpreadsheetId;
+            var sheetName = "Internet";
+
+          
+
+            foreach (var bill in GlobalInternetData.internet)
+            {
+                var data = new Dictionary<string, object>
+        {
+            { "ID", bill.Id },
+            { "Account Number", bill.Account_Number },
+            { "Address", bill.Address },
+            { "Transfer Amount", bill.Transfer_Amount },
+            { "Paid", bill.Paid },
+            { "Tariff Plan", bill.Tariff_Plan },
+            { "Payment Date", bill.Payment_Date },
+            { "Service Status", bill.Service_Status },
+            { "Data Usage", bill.Data_Usage },
+            { "User Name", bill.User_Name }
+        };
+
+                Google_Sheets_Manager.WriteData(sheetsService, spreadsheetId, sheetName, data);
+            }
+        }
+
 
     }
-
-    //public class RSAEncryptor
-    //{
-    //    public static string EncryptData(string data)
-    //    {
-    //        // Завантажуємо публічний ключ
-    //        var publicKey = ATM_Supplement.RSAKeyManager.LoadPublicKey();
-    //        using (var rsa = RSA.Create())
-    //        {
-    //            rsa.ImportParameters(publicKey);
-    //            byte[] encryptedData = rsa.Encrypt(Encoding.UTF8.GetBytes(data), RSAEncryptionPadding.Pkcs1);
-    //            return Convert.ToBase64String(encryptedData);
-    //        }
-    //    }
-    //}
-
-    //public class RSADecryptor
-    //{
-    //    public static string DecryptData(string base64EncryptedData)
-    //    {
-    //        // Завантажуємо приватний ключ
-    //        var privateKey = RSAKeyManager.LoadPrivateKey();
-    //        using (var rsa = RSA.Create())
-    //        {
-    //            rsa.ImportParameters(privateKey);
-    //            byte[] encryptedData = Convert.FromBase64String(base64EncryptedData);
-    //            byte[] decryptedData = rsa.Decrypt(encryptedData, RSAEncryptionPadding.Pkcs1);
-    //            return Encoding.UTF8.GetString(decryptedData);
-    //        }
-    //    }
-    //}
-
 
 }

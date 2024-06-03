@@ -26,6 +26,7 @@ namespace ATM_Winforms
         public string SpendingLimit { get; set; }
         public string IssuingBank { get; set; }
         public string CardType { get; set; }
+        
 
         // Конструктор класу
         public User(int id, string cardnumber, string name, string password, string expirationdate, string paymentsystem, string balance, string address, string issuedate, string cvv_cvc, string cardstatus, string spendinglimit, string issuingbank, string cardtype)
@@ -44,6 +45,7 @@ namespace ATM_Winforms
             SpendingLimit = spendinglimit;
             IssuingBank = issuingbank;
             CardType = cardtype;
+           
         }
     }
 
@@ -55,10 +57,8 @@ namespace ATM_Winforms
         {
             Users.Clear();
         }
-
         public static void GetAllUser()
         {
-
             using (SqlConnection conn = new SqlConnection(Resource_Paths.DB_connectionString))
             {
                 conn.Open();
@@ -66,53 +66,32 @@ namespace ATM_Winforms
                 string query = "SELECT * FROM ATM_info";
                 SqlCommand cmd = new SqlCommand(query, conn);
 
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                // Завантаження приватного ключа для дешифрування
-                RSAParameters privateKey = RSAKeyManager.LoadPrivateKey();
-
-                // Читання результатів запиту
-                while (reader.Read())
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    int id = (int)reader["Id"];
+                    while (reader.Read())
+                    {
+                        int id = (int)reader["Id"];
+                        string retrievedCardNumber = (string)reader["Card_number"];
+                        string name = (string)reader["Full_name"];
+                        string retrievedPassword = (string)reader["PIN"];
+                        string expirationDate = (string)reader["Expiration_date"];
+                        string paymentSystem = (string)reader["Payment_system"];
+                        int balance = Convert.ToInt32(reader["balance"]);
+                        string address = (string)reader["address"];
+                        string issueDate = (string)reader["Issue_Date"];
+                        string cvv_cvc = (string)reader["CVV/CVC "];
+                        string cardStatus = (string)reader["Card_Status"];
+                        string spendingLimit = (string)reader["Spending_Limit"];
+                        string issuingBank = (string)reader["Issuing_bank"];
+                        string cardType = (string)reader["Card_Type"];
 
-                    // Дешифрування полів
-                    string retrievedCardNumber = DecryptField(reader["Card_number"], privateKey);
-                    string name = DecryptField(reader["Full_name"], privateKey);
-                    string retrievedPassword = DecryptField(reader["PIN"], privateKey);
-                    string expirationDate = DecryptField(reader["Expiration_date"], privateKey);
-                    string paymentSystem = DecryptField(reader["Payment_system"], privateKey);
-                    string balance = DecryptField(reader["balance"], privateKey);
-                    string address = DecryptField(reader["address"], privateKey);
-                    string issueDate = DecryptField(reader["Issue_Date"], privateKey);
-                    string cvv_cvc = DecryptField(reader["CVV/CVC "], privateKey);
-                    string cardStatus = DecryptField(reader["Card_Status"], privateKey);
-                    string spendingLimit = DecryptField(reader["Spending_Limit"], privateKey);
-                    string issuingBank = DecryptField(reader["Issuing_bank"], privateKey);
-                    string cardType = DecryptField(reader["Card_Type"], privateKey);
-
-                    // Створюємо об'єкт користувача та додаємо його до списку
-                    User user = new User(id, retrievedCardNumber, name, retrievedPassword, expirationDate, paymentSystem, balance, address, issueDate, cvv_cvc, cardStatus, spendingLimit, issuingBank, cardType);
-                    GlobalData.Users.Add(user);
+                        User user = new User(id, retrievedCardNumber, name, retrievedPassword, expirationDate, paymentSystem, balance.ToString(), address, issueDate, cvv_cvc, cardStatus, spendingLimit, issuingBank, cardType);
+                        GlobalData.Users.Add(user);
+                    }
                 }
-
-                reader.Close();
             }
-
-            
         }
-        // Метод для дешифрування окремих полів
-        private static string DecryptField(object encryptedField, RSAParameters privateKey)
-        {
-            if (encryptedField == null || encryptedField == DBNull.Value)
-            {
-                return null;
-            }
 
-            byte[] encryptedData = Convert.FromBase64String(encryptedField.ToString());
-            byte[] decryptedData = Encryption_Manager.DecryptData(encryptedData, privateKey);
-            return Encoding.UTF8.GetString(decryptedData);
-        }
     }
 
 }

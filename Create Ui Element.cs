@@ -47,7 +47,7 @@ namespace ATM_APP
             return labels;
         }
 
-        public  TextBox[] CreateTextBox(short arraySize, Form form,  Point[] TextBoxLocation, Size[] TextBoxSize)
+        public TextBox[] CreateTextBox(short arraySize, Form form,  Point[] TextBoxLocation, Size[] TextBoxSize)
         {
             TextBox[] textBoxes  = new TextBox[arraySize];
 

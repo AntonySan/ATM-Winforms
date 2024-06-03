@@ -60,7 +60,7 @@ namespace ATM_APP
                     WriteCompanyDetailsToFile(Resource_Paths.CompanyDetails_DailyReport, $"Company Details_{currentDate}.txt", ReportType.Daily);
                     WriteCharityFondsToFile(Resource_Paths.CharityFonds_DailyReport, $"Charity Fonds_{currentDate}.txt", ReportType.Daily);
 
-                    MessageBox.Show("Звіт успішно записаний до файлів");
+                   
                 }
                 catch (Exception ex)
                 {
@@ -92,7 +92,7 @@ namespace ATM_APP
                         WriteCompanyDetailsToFile(Resource_Paths.CompanyDetails_MonthlyReport, $"Company Details {previousMonthName} {previousMonthYear}.txt", ReportType.Monthly);
                         WriteCharityFondsToFile(Resource_Paths.CharityFonds_MonthlyReport, $"Charity Fonds {previousMonthName} {previousMonthYear}.txt", ReportType.Monthly);
 
-                        MessageBox.Show("Щомісячний звіт успішно записаний до файлів");
+                       
                     }
                     catch (Exception ex)
                     {
