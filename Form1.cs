@@ -2915,7 +2915,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
             // Заповнити DataGridView даними
             foreach (var transaction in GlobalTransactionData.Transactions)
             {
-                dataGridView1.Rows.Add(transaction.TransactionType, transaction.Amount, transaction.Timestamp);
+                dataGridView1.Rows.Add(transaction.TransactionType, transaction.Timestamp ,transaction.Amount);
             }
 
             // Приховати бокову панель навігації.
