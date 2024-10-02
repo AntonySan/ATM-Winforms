@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATM_Winforms
+namespace ATM_APP
 {
     public class Resource_Paths
     {

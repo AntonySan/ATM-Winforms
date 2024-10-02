@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 
-namespace ATM_Winforms
+namespace ATM_APP
 {
     public class Update_DB 
     {   DatabaseManager databaseManager = new DatabaseManager();

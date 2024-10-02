@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Data.OleDb;
 using ATM_Winforms;
 using Microsoft.VisualBasic;
-using static ATM_Winforms.CompanyDetails;
+using static ATM_APP.CompanyDetails;
 using ATM_CryptoGuardian;
 using System.Security.Cryptography;
 using System.Text;
@@ -73,15 +73,21 @@ namespace ATM_APP
         {
             sqlConnection.Open();
 
-            foreach (var parameter in parameters)
+            foreach (var parameter in parameters) // Проходимо кожен елемент в колекції parameters
             {
-                string mergeQuery = $"MERGE INTO {tableName} AS target " +
+
+                ///  MERGE-запити (або MERGE statements) в SQL використовуються для об'єднання даних з однієї таблиці в іншу, 
+                ///  дозволяючи виконувати вставки, оновлення або видалення даних залежно від умов. Вони також відомі як UPSERT
+                ///  (update or insert) запити.
+
+                // Створюємо SQL-запит типу MERGE для об'єднання або оновлення записів у базі даних
+                string mergeQuery = $"MERGE INTO {tableName} AS target " + // Виконуємо об'єднання з таблицею tableName, псевдонім - target
                      $"USING (VALUES " +
                      $"(@Date, @Bank, @BaseCurrency, @BaseCurrencyLit, @ExchangeRate, @Currency, @SaleRateNB, @PurchaseRateNB, @SaleRate, @PurchaseRate)) " +
-                     $"AS source (Date, Bank, baseCurrency, baseCurrencyLit, exchangeRate, currency, SaleRateNB, PurchaseRateNB, SaleRate, PurchaseRate) " +
-                     $"ON (target.Bank = source.Bank AND target.baseCurrency = source.baseCurrency AND target.currency = source.currency) " +
-                     $"WHEN MATCHED THEN " +
-                     $"UPDATE SET " +
+                     $"AS source (Date, Bank, baseCurrency, baseCurrencyLit, exchangeRate, currency, SaleRateNB, PurchaseRateNB, SaleRate, PurchaseRate) " + // Визначаємо джерело даних (source)
+                     $"ON (target.Bank = source.Bank AND target.baseCurrency = source.baseCurrency AND target.currency = source.currency) " + // Умови об'єднання на основі відповідних полів
+                     $"WHEN MATCHED THEN " + // Якщо знайдено відповідний запис
+                     $"UPDATE SET " + // Оновлюємо поля цільової таблиці новими значеннями з джерела
                      $"target.Date = source.Date, " + // Оновлення дати
                      $"target.baseCurrencyLit = source.baseCurrencyLit, " +
                      $"target.exchangeRate = source.exchangeRate, " +
@@ -89,9 +95,10 @@ namespace ATM_APP
                      $"target.PurchaseRateNB = source.PurchaseRateNB, " +
                      $"target.SaleRate = source.SaleRate, " +
                      $"target.PurchaseRate = source.PurchaseRate " +
-                     $"WHEN NOT MATCHED THEN " +
-                     $"INSERT (Date, Bank, baseCurrency, baseCurrencyLit, exchangeRate, currency, SaleRateNB, PurchaseRateNB, SaleRate, PurchaseRate) " +
+                     $"WHEN NOT MATCHED THEN " + // Якщо відповідний запис не знайдено
+                     $"INSERT (Date, Bank, baseCurrency, baseCurrencyLit, exchangeRate, currency, SaleRateNB, PurchaseRateNB, SaleRate, PurchaseRate) " + // Вставляємо новий запис
                      $"VALUES (source.Date, source.Bank, source.baseCurrency, source.baseCurrencyLit, source.exchangeRate, source.currency, source.SaleRateNB, source.PurchaseRateNB, source.SaleRate, source.PurchaseRate);";
+
 
                 using (SqlCommand command = new SqlCommand(mergeQuery, sqlConnection))
                 {

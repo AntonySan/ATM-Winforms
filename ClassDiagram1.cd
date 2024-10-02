@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ATM_APP.Card_Registry" Collapsed="true">
+    <Position X="30" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAACAAAAAQAgAABAAAAAAIEAQAgCBAAAACAAAADAAAA=</HashCode>
+      <FileName>Card Registry.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalCardlData" Collapsed="true">
+    <Position X="33.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Card Registry.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.CharityFond" Collapsed="true">
+    <Position X="31.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAACAAAAAABAAAAIAAAAIAAEACAAAAIAAAgAA=</HashCode>
+      <FileName>Charity Fonds.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalCharityFond" Collapsed="true">
+    <Position X="35.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAIAAAA=</HashCode>
+      <FileName>Charity Fonds.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.CompanyDetails" Collapsed="true">
+    <Position X="33.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAABAhAAIAAAAIAAAAKAAAAIAAACAA=</HashCode>
+      <FileName>CompanyDetails.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Create_Ui_Element" Collapsed="true">
+    <Position X="35.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAIAAAAAAAAAAAYAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Create Ui Element.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.DatabaseManager" Collapsed="true">
+    <Position X="30" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAEAAAAAAhAAAAAAAAAAAAAgAgAAAAgACAgQAAAAA=</HashCode>
+      <FileName>DatabaseManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Encryption_Manager" Collapsed="true">
+    <Position X="31.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIACABAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Encryption Manager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.CurrencyExchangeRate" Collapsed="true">
+    <Position X="37" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAIAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exchange Rates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.ExchangeRateData" Collapsed="true">
+    <Position X="33.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EQAABAAAAAAAAAIAAIAAAAAACAAAAAABAAAAAAAQCIA=</HashCode>
+      <FileName>Exchange Rates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.ExchangeRates" Collapsed="true">
+    <Position X="38.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exchange Rates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.ExchangeRateResponse" Collapsed="true">
+    <Position X="37" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAIAAAAAAAAAAAAAAAABAAAAAAAQCAA=</HashCode>
+      <FileName>Exchange Rates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.CurrencyRate" Collapsed="true">
+    <Position X="38.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAEAAAAAAgAIAAAAAAAAACAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Exchange Rates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.ExchangeRateGlobal" Collapsed="true">
+    <Position X="35.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exchange Rates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.File_Creator" Collapsed="true">
+    <Position X="30" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAEAAAABAAAIAAAAAAAAAAQCAAQAEAQgSAAA=</HashCode>
+      <FileName>File Creator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Fine" Collapsed="true">
+    <Position X="31.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAAAAAAAgAAAAAAAAABAAAAAIAIAAA=</HashCode>
+      <FileName>Fine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalFines" Collapsed="true">
+    <Position X="38.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAQAAAAAAAAIA=</HashCode>
+      <FileName>Fine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.InsertCardForm" Collapsed="true">
+    <Position X="14" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABACAAEABAIACAIgACAAAAAQAAAAAAhAAAQAA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Base_Form" Collapsed="true">
+    <Position X="14" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQAAAAAAAEABBAgAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Log_In" Collapsed="true">
+    <Position X="20.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAAABBAACABBEIAAAAAACAAAACAAAAQAABAgAAQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Main_Menu" Collapsed="true">
+    <Position X="25.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EBAAAAABAgBAABBQoAAACAQwCEAQAABAAQAAgQACACA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.CashWithdrawalForm" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAABAAAAABBEqACAIAgAgAAAAAAAAQAABAAACQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.ReplenishTheCardForm" Collapsed="true">
+    <Position X="5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAgAJAAAAABBEKAAAIAgAwIAABAAAAQAABAAACQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.FinesForm1" Collapsed="true">
+    <Position X="9.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgBAABEABBEIAAAAAAAAAAAAAAAAQAABAAAAAA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.FinesForm2" Collapsed="true">
+    <Position X="16.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAJACAIABBAMAAAAAgAgAAAAAAgCAAABQBACSA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.UtilityBillsForm" Collapsed="true">
+    <Position X="18.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAIAAJAAACABBAMAACAAgAwAAACAAgCQAABQAACQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.InternetForm" Collapsed="true">
+    <Position X="23" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAJAAAAAVBEIAAAIAgIwAEABCgAAQQABAAACQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.TransferToTheCardForm" Collapsed="true">
+    <Position X="27.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAJAAAAABhkKAAAICwIgAGAAACAAQAABAAgCQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.TransferByRequisitesForm" Collapsed="true">
+    <Position X="2.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAJAAAAABhEIAAAICgIgAEBAAAAAQAABAAkCQQ=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.CharityForm" Collapsed="true">
+    <Position X="7.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAJAAAAABhEIAAAICgIgAEAAAgAAQAABABgCQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.PaymentHistoryForm" Collapsed="true">
+    <Position X="11.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABBAIAAAQAAAgAAAAAAAAQAAAAAAAQA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.ReportManager" Collapsed="true">
+    <Position X="31.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQFAIAAACAIJIAAIQICAgAAAAAAwAAAAAAAgAAAAA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Google_Drive" Collapsed="true">
+    <Position X="35.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAEACACAAoAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Google Drive.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Google_Sheets_Manager" Collapsed="true">
+    <Position X="37" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAMACgAACIAAAAEgAAgAAAAAIIAAAAAAAA=</HashCode>
+      <FileName>Google Sheets Manager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Hashing_Service" Collapsed="true">
+    <Position X="38.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAQAAAAAAAgAACAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Hashing Service.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Internet" Collapsed="true">
+    <Position X="30" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEACAAAAAAAgAAAAAAAEgAAAAAEAAYACAAAAAAAAAAA=</HashCode>
+      <FileName>Internet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalInternetData" Collapsed="true">
+    <Position X="30" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAACAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Internet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Resource_Paths" Collapsed="true">
+    <Position X="33.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQEAIgSCEDCIkBIgMADAAEANMiABAAQIQBALAgAEg=</HashCode>
+      <FileName>Resource Paths.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Transaction" Collapsed="true">
+    <Position X="35.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAoAAAAACACAAiACAAAAAEAAAAAAAAAAAI=</HashCode>
+      <FileName>Transactions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalTransactionData" Collapsed="true">
+    <Position X="31.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAACAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Transactions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Ui_Element" Collapsed="true">
+    <Position X="37" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAABAAAQAAA=</HashCode>
+      <FileName>Ui_Element.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Update_DB" Collapsed="true">
+    <Position X="38.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAgAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Update DB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.User" Collapsed="true">
+    <Position X="30" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAQAggIBAAAgAAAAAQAgCBAACAAAAAABAAAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalData" Collapsed="true">
+    <Position X="37" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAIAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.Utility_Bills" Collapsed="true">
+    <Position X="31.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACQAAAAAAgAAAAAAgAAACAAAAAAIACAAAAAAAAAEA=</HashCode>
+      <FileName>Utility Bills.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATM_APP.GlobalUtility_Bills" Collapsed="true">
+    <Position X="33.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAQAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Utility Bills.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

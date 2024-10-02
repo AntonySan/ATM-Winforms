@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ATM_Winforms
+namespace ATM_APP
 {
     public class Encryption_Manager
     {

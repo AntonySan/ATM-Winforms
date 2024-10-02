@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 using ATM_CryptoGuardian;
 using System.Security.Cryptography;
 
-namespace ATM_Winforms
+namespace ATM_APP
 {
     public class User
     {

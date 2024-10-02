@@ -13,7 +13,7 @@ using System.Net;
 using Microsoft.Identity.Client.NativeInterop;
 using System.Security.AccessControl;
 using System.Runtime.CompilerServices;
-using static ATM_Winforms.CompanyDetails;
+using static ATM_APP.CompanyDetails;
 using ATM_Winforms.Design_Forms;
 using System.Security.Cryptography.Xml;
 using Google.Apis.Drive.v3;
@@ -26,7 +26,7 @@ using System.Media;
 
 namespace ATM_APP
 {
-
+    //Me
     public partial class Base_Form : Form
     {
         private Label[] labels;
@@ -84,8 +84,7 @@ namespace ATM_APP
           
         }
     }
-
-
+    //Liza
     public partial class InsertCardForm : Base_Form
  {
      DatabaseManager databaseManager = new DatabaseManager();
@@ -270,7 +269,7 @@ namespace ATM_APP
 
 
     }
-    //Ready
+    //Me
     public partial class Log_In : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -454,7 +453,7 @@ namespace ATM_APP
 
 
     }
-    //Ready
+    //Me
     public partial class Main_Menu : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -673,8 +672,8 @@ namespace ATM_APP
             this.Hide();
         }
 
-    }   
-    //Ready
+    }
+    //Me
     public partial class CashWithdrawalForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -836,7 +835,7 @@ namespace ATM_APP
             ReloadUserInfo();
         }
     }
-    //Ready
+    //Me
     public partial class ReplenishTheCardForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -1046,7 +1045,7 @@ namespace ATM_APP
         }
         
     }
-    //Ready
+    //Me
     public partial class FinesForm1 : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -1194,7 +1193,7 @@ namespace ATM_APP
            
         }
     }
-    //Ready
+    //Liza
     public partial class FinesForm2 : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -1455,7 +1454,7 @@ namespace ATM_APP
         }
 
     }
-    //Ready
+    //Liza
     public partial class UtilityBillsForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -1770,7 +1769,8 @@ namespace ATM_APP
 
         }
     }
-    //Ready
+
+    //Liza
     public partial class InternetForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -2043,7 +2043,8 @@ namespace ATM_APP
             ReloadInternetInfo();
         }
     }
-    //Ready
+
+    //Liza
     public partial class TransferToTheCardForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -2353,7 +2354,8 @@ namespace ATM_APP
             ReloadUserInfo();
         }
     }
-    //Ready
+
+    //Liza
     public partial class TransferByRequisitesForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -2593,6 +2595,8 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", IBAN_Tb
             ReloadUserInfo();
         }
     }
+
+    //Liza
     public partial class CharityForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -2680,14 +2684,14 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", IBAN_Tb
             DialogResult result = MessageBox.Show("Ви хочете переказати кошти з картки чи готівкою?", "Переказ коштів", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             // Отримання об'єкта картки отримувача
             CharityFond charityFond = GlobalCharityFond.CharityFonds[0];
-           
+
             if (result == DialogResult.Yes)
             {
-              
+
                 // Перевірка наявності коштів на рахунку
                 if (GlobalCharityFond.CharityFonds.Count > 0)
                 {
-                  
+
 
                     // Перевірка достатньої суми для переказу
                     int transferAmount = int.Parse(AmountTransfer_Tbx.Text);
@@ -2708,14 +2712,14 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", IBAN_Tb
                         // Оновлення балансу картки отримувача
                         charityFond.AccountBalance += transferAmount;
 
-                        databaseManager.UpdateCharityFondData(charityFond.FondName,charityFond.RegistrationNumber,
-                            charityFond.Country,charityFond.Address,charityFond.ContactPerson,charityFond.Phone,charityFond.Email,
-                            charityFond.BankAccount,charityFond.AccountBalance);
+                        databaseManager.UpdateCharityFondData(charityFond.FondName, charityFond.RegistrationNumber,
+                            charityFond.Country, charityFond.Address, charityFond.ContactPerson, charityFond.Phone, charityFond.Email,
+                            charityFond.BankAccount, charityFond.AccountBalance);
 
                         GlobalCharityFond.ClearCharityFonds();
 
 
-                       
+
                         DatabaseManager.LoadCharityFondFromDatabase(FondName_Tbx.Text);
                         charityFond = GlobalCharityFond.CharityFonds[0];
 
@@ -2809,7 +2813,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
 
         private void FondName_Tbx_Leave(object sender, EventArgs e)
         {
-            
+
             DatabaseManager.LoadCharityFondFromDatabase(FondName_Tbx.Text);
 
             // Оновлення тексту мітки в залежності від вмісту текстових полів
@@ -2829,11 +2833,12 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
         private void Close_Form(object sender, EventArgs e)
         {
             ReloadUserInfo();
-            
+
 
         }
     }
 
+    //Liza
     public partial class PaymentHistoryForm : Base_Form
     {
         Create_Ui_Element create_ui_element = new Create_Ui_Element();
@@ -2848,7 +2853,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
             CreateMyDataGridView(user.ID);
 
         }
-        
+
 
         private void AddLabel()
         {
@@ -2858,12 +2863,8 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
 
 
             labels = create_ui_element.CreateLabel(2, this, LabelText, Labellocation);
-        
+
         }
-
-       
-
-
 
         public void CreateMyDataGridView(int userId)
         {
@@ -2915,7 +2916,7 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
             // Заповнити DataGridView даними
             foreach (var transaction in GlobalTransactionData.Transactions)
             {
-                dataGridView1.Rows.Add(transaction.TransactionType, transaction.Timestamp ,transaction.Amount);
+                dataGridView1.Rows.Add(transaction.TransactionType, transaction.Timestamp, transaction.Amount);
             }
 
             // Приховати бокову панель навігації.
@@ -2965,7 +2966,8 @@ transferAmount, "UAH", DateTime.Now, "Успішно", "Готівка", FondNam
 
     }
 
-    public  class ReportManager
+    //Me
+    public class ReportManager
     {
         private File_Creator fileCreator;
         private Google_Sheets_Manager googleSheetsManager;

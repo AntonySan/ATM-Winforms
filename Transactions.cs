@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ATM_Winforms
+namespace ATM_APP
 {
     public class Transaction
     {

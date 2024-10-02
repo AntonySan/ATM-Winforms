@@ -3,7 +3,7 @@ using System.Text;
 using Konscious.Security.Cryptography;
 using BCrypt.Net;
 
-namespace ATM_Winforms
+namespace ATM_APP
 {
    public  class Hashing_Service
     {
